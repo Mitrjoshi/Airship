@@ -1,5 +1,5 @@
 import { ServerRoutes } from "@/constants/ServerRoutes";
-import { createResponse } from "@/utils/createResponse";
+import { CreateWorkspace } from "@/controllers/workspace/createWorkspace.controller";
 import { Request, Response, Router } from "express";
 
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 router.post(
   ServerRoutes.workspace.create,
   async (req: Request, res: Response) => {
-    res.send(createResponse(true, "created"));
+    await CreateWorkspace(req, res);
   }
 );
 
