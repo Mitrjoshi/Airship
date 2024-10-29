@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 const createWorkspace = async (
   data: CreateWorkspaceRequest
 ): Promise<ApiResponse> => {
-  const response = await apiClient.post("/api/workspace/create", data);
+  const response = await apiClient.post("/workspace/create", data);
   return response.data;
 };
 

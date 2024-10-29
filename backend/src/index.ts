@@ -4,11 +4,13 @@ dotenv.config();
 import express, { Express } from "express";
 import CreateWorkspace from "./routes/workspace/CreateWorkspace.route";
 import { ServerRoutes } from "./constants/ServerRoutes";
+import cors from "cors";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cors());
 
 app.use(ServerRoutes.workspace.index, CreateWorkspace);
 

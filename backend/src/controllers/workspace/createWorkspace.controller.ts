@@ -12,7 +12,7 @@ export const CreateWorkspace = async (
 
     res
       .status(INSERT_DATA.status)
-      .send(createResponse(false, INSERT_DATA.statusText, INSERT_DATA?.data));
+      .send(createResponse(true, INSERT_DATA.statusText, INSERT_DATA?.data));
   } catch (error: any) {
     res
       .status(500)
