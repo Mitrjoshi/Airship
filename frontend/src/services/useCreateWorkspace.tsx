@@ -3,6 +3,7 @@ import { ApiResponse } from "@/types/response";
 import { CreateWorkspaceRequest } from "@/types/requests";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const createWorkspace = async (
   data: CreateWorkspaceRequest
@@ -13,14 +14,12 @@ const createWorkspace = async (
 
 export const useCreateWorkspace = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: createWorkspace,
     onSuccess: (data) => {
       if (data.data) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
-        });
+        navigate(`/workspace/${data.data.uuid}`);
       }
     },
     onError: (error: any) => {
