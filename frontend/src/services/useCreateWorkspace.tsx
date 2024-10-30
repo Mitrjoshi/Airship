@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from "@/utils/apiClient";
 import { ApiResponse } from "@/types/response";
 import { CreateWorkspaceRequest } from "@/types/requests";
@@ -19,7 +20,7 @@ export const useCreateWorkspace = () => {
     mutationFn: createWorkspace,
     onSuccess: (data) => {
       if (data.data) {
-        navigate(`/workspace/${data.data.uuid}`);
+        navigate(`/workspace/${data.data.workspace_id}`);
       }
     },
     onError: (error: any) => {

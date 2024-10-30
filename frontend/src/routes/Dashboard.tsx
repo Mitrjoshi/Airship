@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCreateWorkspace } from "@/services/useCreateWorkspace";
+import TitleHeader from "@/components/shared/TitleHeader";
 
 const formSchema = z.object({
   workspace_name: z.string().min(2, {
@@ -41,7 +42,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <header className="p-4 border-b">Create a workspace</header>
+      <TitleHeader title="Create a workspace" />
       <div className="p-10">
         <Form {...form}>
           <form

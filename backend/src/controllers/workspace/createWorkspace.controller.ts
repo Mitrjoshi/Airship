@@ -10,9 +10,17 @@ export const CreateWorkspace = async (
   try {
     const INSERT_DATA = await CreateWorkspaceSupabase(req.body);
 
+    const NEW_INSERT_DATA = {
+      workspace_id: INSERT_DATA?.data.uuid,
+      name: INSERT_DATA?.data.name,
+      company_name: INSERT_DATA?.data.company_name,
+      description: INSERT_DATA?.data.description,
+      created_by: INSERT_DATA?.data.created_by,
+    };
+
     res
       .status(INSERT_DATA.status)
-      .send(createResponse(true, INSERT_DATA.statusText, INSERT_DATA?.data));
+      .send(createResponse(true, INSERT_DATA.statusText, NEW_INSERT_DATA));
   } catch (error: any) {
     res
       .status(500)
