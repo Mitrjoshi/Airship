@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useCreateProject } from "@/services/useCreateProject";
 
 const formSchema = z.object({
   project_name: z.string().min(2, {
@@ -46,7 +46,11 @@ const formSchema = z.object({
 
 export default function Workspace() {
   const { workspaceId } = useParams();
-  const [formStep, setFormStep] = useState(1);
+
+  // const [formStep, setFormStep] = useState(1);
+
+  //api hooks
+  const { mutate } = useCreateProject();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +62,15 @@ export default function Workspace() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    setFormStep(formStep + 1);
+    // setFormStep(formStep + 1);
+
+    mutate({
+      name: values.project_name,
+      service: values.project_service,
+      created_by: "35ed859f-0fb6-4c5d-8f27-45e13612beb8",
+      workspace_id: workspaceId as string,
+      provider: "aws",
+    });
   }
 
   return (
@@ -69,7 +81,6 @@ export default function Workspace() {
           onOpenChange={(open) => {
             if (!open) {
               setTimeout(() => {
-                setFormStep(1);
                 form.reset();
               }, 200);
             }
@@ -84,67 +95,65 @@ export default function Workspace() {
               <DialogTitle>Create Project</DialogTitle>
             </DialogHeader>
 
-            {formStep === 1 && (
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-8"
-                >
-                  <FormField
-                    control={form.control}
-                    name="project_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project name</FormLabel>
+            {/* {formStep === 1 && ( */}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="project_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter project name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="project_service"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Services</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
-                          <Input placeholder="Enter project name" {...field} />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a service" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="project_service"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Services</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a service" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="s3">S3</SelectItem>
-                            <SelectItem value="lambda">Lambda</SelectItem>
-                            <SelectItem value="ec2">EC2</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          You can manage email addresses in your
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                        <SelectContent>
+                          <SelectItem value="s3">S3</SelectItem>
+                          <SelectItem value="lambda">Lambda</SelectItem>
+                          <SelectItem value="ec2">EC2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        You can manage email addresses in your
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <div className="flex space-x-4 justify-end">
-                    <Button type="submit">Next</Button>
-                    <DialogClose>
-                      <Button type="button" variant="outline">
-                        Cancel
-                      </Button>
-                    </DialogClose>
-                  </div>
-                </form>
-              </Form>
-            )}
-
-            {formStep === 2 && <></>}
+                <div className="flex space-x-4 justify-end">
+                  <Button type="submit">Create</Button>
+                  <DialogClose>
+                    <Button type="button" variant="outline">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                </div>
+              </form>
+            </Form>
+            {/* )} */}
           </DialogContent>
         </Dialog>
       </div>

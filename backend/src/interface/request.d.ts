@@ -11,5 +11,5 @@ export interface CreateProjectRequest {
   service: "s3" | "lambda" | "ec2";
   created_by: string;
   provider?: "aws";
-  workspace_uuid: string;
+  workspace_id: string;
 }

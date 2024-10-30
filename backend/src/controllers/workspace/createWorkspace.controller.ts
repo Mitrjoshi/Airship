@@ -11,7 +11,7 @@ export const CreateWorkspace = async (
     const INSERT_DATA = await CreateWorkspaceSupabase(req.body);
 
     const NEW_INSERT_DATA = {
-      workspace_id: INSERT_DATA?.data.uuid,
+      workspace_id: INSERT_DATA?.data.id,
       name: INSERT_DATA?.data.name,
       company_name: INSERT_DATA?.data.company_name,
       description: INSERT_DATA?.data.description,

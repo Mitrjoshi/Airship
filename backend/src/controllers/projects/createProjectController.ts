@@ -11,11 +11,11 @@ export const CreateProjectController = async (
     const data = await CreateProject(req.body);
 
     const projectData = {
-      projectId: data.uuid,
+      projectId: data.id,
       name: data.name,
       description: data.description,
       created_by: data.created_by,
-      workspaceId: data.workspace_uuid,
+      workspaceId: data.workspace_id,
       createdBy: data.created_by,
       service: data.service,
     };
