@@ -27,3 +27,17 @@ export const getWorkspaces = async (userId: string) => {
   }
   return workspaces;
 };
+
+export const getAWSCredentials = async (workspaceId: string) => {
+  const { data: credentials, error } = await supabase
+    .from("credentials")
+    .select("*")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return credentials;
+};
