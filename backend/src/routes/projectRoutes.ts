@@ -1,9 +1,12 @@
 import { ServerRoutes } from "@/constants/ServerRoutes";
-import { CreateProjectController } from "@/controllers/projects/createProjectController";
+import { createProjectController } from "@/controllers/projects/createProjectController";
+import { getProjectsController } from "@/controllers/projects/getProjectsController";
 import { Router } from "express";
 
 const router = Router();
 
-router.post(ServerRoutes.projects.create, CreateProjectController);
+router.get("/:workspaceId", getProjectsController);
+
+router.post(ServerRoutes.projects.create, createProjectController);
 
 export default router;

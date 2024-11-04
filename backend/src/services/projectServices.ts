@@ -1,7 +1,7 @@
 import { CreateProjectRequest } from "@/interface/request";
 import { supabase } from "@/lib/supabase";
 
-export const CreateProject = async (DATA: CreateProjectRequest) => {
+export const createProject = async (DATA: CreateProjectRequest) => {
   const { data: ProjectData, error } = await supabase
     .from("projects")
     .insert([DATA])
@@ -14,4 +14,17 @@ export const CreateProject = async (DATA: CreateProjectRequest) => {
   }
 
   return ProjectData;
+};
+
+export const getProjects = async (WorkspaceId: string) => {
+  const { data: projects, error } = await supabase
+    .from("projects")
+    .select()
+    .eq("workspace_id", WorkspaceId);
+
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return projects;
 };

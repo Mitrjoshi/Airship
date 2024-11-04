@@ -3,7 +3,7 @@ import { CreateProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
-export const CreateProjectController = async (
+export const createProjectController = async (
   req: Request<{}, {}, CreateProjectRequest>,
   res: Response
 ) => {
