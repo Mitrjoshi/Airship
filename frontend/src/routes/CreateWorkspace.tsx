@@ -27,7 +27,7 @@ const CreateWorkspace = () => {
         message: "Access key must be length of 20.",
       })
       .max(20),
-    workspace_secret_access_key: z
+    workspace_secret_key: z
       .string()
       .min(40, {
         message: "Secret access key must be length of 40.",
@@ -50,7 +50,7 @@ const CreateWorkspace = () => {
       workspace_name: "",
       workspace_description: "",
       workspace_access_key: "",
-      workspace_secret_access_key: "",
+      workspace_secret_key: "",
       agree: false, // Default agree to false
     },
     mode: "onChange", // Validates form on each change
@@ -63,6 +63,10 @@ const CreateWorkspace = () => {
       name: values.workspace_name,
       description: values.workspace_description,
       created_by: "35ed859f-0fb6-4c5d-8f27-45e13612beb8",
+      company_name: "Example Company",
+      access_key: values.workspace_access_key,
+      secret_key: values.workspace_secret_key,
+      region: "us-east-1",
     });
   }
 
@@ -125,7 +129,7 @@ const CreateWorkspace = () => {
 
               <FormField
                 control={form.control}
-                name="workspace_secret_access_key"
+                name="workspace_secret_key"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Secret Access Key</FormLabel>

@@ -103,6 +103,7 @@ function CreateProjectDialog() {
       created_by: "35ed859f-0fb6-4c5d-8f27-45e13612beb8",
       workspace_id: workspaceId as string,
       provider: "aws",
+      bucket_name: values.project_name.toLowerCase().replace(/\s+/g, "-"),
     });
   }
 
