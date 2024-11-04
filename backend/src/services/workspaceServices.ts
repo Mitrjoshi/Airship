@@ -4,7 +4,14 @@ import { supabase } from "@/lib/supabase";
 export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
   const data = await supabase
     .from("workspaces")
-    .insert([DATA])
+    .insert([
+      {
+        name: DATA.name,
+        company_name: DATA.company_name,
+        description: DATA.description,
+        created_by: DATA.created_by,
+      },
+    ])
     .select()
     .maybeSingle();
 

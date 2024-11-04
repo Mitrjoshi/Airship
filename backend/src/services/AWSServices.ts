@@ -51,11 +51,6 @@ export const createS3Bucket = async (
       region,
     });
 
-    const bucketParams = {
-      Bucket: bucketName,
-      ACL: "public-read", // Required for public access (can adjust as needed)
-    };
-
     // Check if the bucket already exists
     try {
       await s3.headBucket({ Bucket: bucketName }).promise();
@@ -63,7 +58,11 @@ export const createS3Bucket = async (
     } catch (err: any) {
       if (err.statusCode === 404) {
         // Step 1: Create the bucket
-        await s3.createBucket(bucketParams).promise();
+        await s3
+          .createBucket({
+            Bucket: bucketName,
+          })
+          .promise();
         console.log(`Bucket "${bucketName}" created successfully.`);
 
         // Step 2: Enable website hosting on the bucket
@@ -80,6 +79,20 @@ export const createS3Bucket = async (
         };
         await s3.putBucketWebsite(websiteParams).promise();
         console.log(`Website hosting enabled for bucket "${bucketName}".`);
+
+        // Step 2.1: Disable Block Public Access
+        await s3
+          .putPublicAccessBlock({
+            Bucket: bucketName,
+            PublicAccessBlockConfiguration: {
+              BlockPublicAcls: false,
+              IgnorePublicAcls: false,
+              BlockPublicPolicy: false,
+              RestrictPublicBuckets: false,
+            },
+          })
+          .promise();
+        console.log(`Public access block disabled for bucket "${bucketName}".`);
 
         // Step 3: Set bucket policy to allow public access (optional, only if public access is needed)
         const bucketPolicy = {
