@@ -1,5 +1,5 @@
 import TitleHeader from "@/components/shared/TitleHeader";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useCreateProject } from "@/services/useCreateProject";
+import { useGetProjects } from "@/services/useGetProjects";
 
 const formSchema = z.object({
   project_name: z.string().min(2, {
@@ -48,6 +49,10 @@ export default function Workspace() {
   const { workspaceId } = useParams();
 
   // const [formStep, setFormStep] = useState(1);
+
+  const { data: projects, isLoading: isFetchingProjects } = useGetProjects(
+    workspaceId as string
+  );
 
   //api hooks
   const { mutate } = useCreateProject();
@@ -76,7 +81,24 @@ export default function Workspace() {
   return (
     <div>
       <TitleHeader title={`Workspace: ${workspaceId}`} />
-      <div className="flex justify-center items-center p-10">
+      <div className="p-10">
+        <div className="flex gap-6 mb-6">
+          {projects?.data?.map((project) => (
+            <Link
+              to={`/project/${project.id}`}
+              key={project.id}
+              className="border flex flex-col justify-between p-4 rounded-lg bg-gray-900 w-96"
+            >
+              <h3 className="mb-2">{project.name}</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                {project.description}
+              </p>
+              <span className="text-xs text-muted-foreground">
+                {project.created_at}
+              </span>
+            </Link>
+          ))}
+        </div>
         <Dialog
           onOpenChange={(open) => {
             if (!open) {
