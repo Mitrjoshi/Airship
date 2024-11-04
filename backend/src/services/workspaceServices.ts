@@ -12,6 +12,19 @@ export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
     throw Error(data.error.message);
   }
 
+  const { error } = await supabase.from("credentials").insert([
+    {
+      workspace_id: data.data?.id,
+      access_key: DATA.access_key,
+      secret_key: DATA.secret_key,
+      region: DATA.region,
+    },
+  ]);
+
+  if (error) {
+    throw Error(error.message);
+  }
+
   return data;
 };
 
