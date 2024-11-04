@@ -1,9 +1,12 @@
 import { ServerRoutes } from "@/constants/ServerRoutes";
-import { CreateWorkspace } from "@/controllers/workspace/createWorkspace.controller";
+import { createWorkspaceController } from "@/controllers/workspace/createWorkspace.controller";
+import { getWorkspacesController } from "@/controllers/workspace/getWorkspacesController";
 import { Router } from "express";
 
 const router = Router();
 
-router.post(ServerRoutes.workspace.create, CreateWorkspace);
+router.get("/", getWorkspacesController);
+
+router.post(ServerRoutes.workspace.create, createWorkspaceController);
 
 export default router;

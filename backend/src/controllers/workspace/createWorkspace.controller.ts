@@ -1,14 +1,14 @@
 import { I_CREATE_INTERFACE_BODY } from "@/interface/request";
-import { CreateWorkspaceSupabase } from "@/services/createWorkspace.service";
+import { createWorkspace } from "@/services/workspaceServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
-export const CreateWorkspace = async (
+export const createWorkspaceController = async (
   req: Request<{}, {}, I_CREATE_INTERFACE_BODY>,
   res: Response
 ) => {
   try {
-    const INSERT_DATA = await CreateWorkspaceSupabase(req.body);
+    const INSERT_DATA = await createWorkspace(req.body);
 
     const NEW_INSERT_DATA = {
       workspace_id: INSERT_DATA?.data.id,

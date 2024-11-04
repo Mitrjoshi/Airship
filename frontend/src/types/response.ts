@@ -17,3 +17,12 @@ export interface getProjectsResponse {
   workspace_id: string;
   created_by: string;
 }
+
+export interface getWorkspacesResponse {
+  id: string;
+  created_at: Date;
+  name: string;
+  company_name: string | null;
+  description: string | null;
+  created_by: string;
+}
