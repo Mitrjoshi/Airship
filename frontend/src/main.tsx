@@ -6,6 +6,7 @@ import Root from "@/routes/Root";
 import Dashboard from "@/routes/Dashboard";
 import Workspace from "@/routes/Workspace";
 import Project from "./routes/Project";
+import CreateWorkspace from "./routes/CreateWorkspace";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+      },
+      {
+        path: "create-workspace",
+        element: <CreateWorkspace />,
       },
       {
         path: "workspace/:workspaceId",

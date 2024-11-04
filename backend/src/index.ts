@@ -4,8 +4,8 @@ dotenv.config();
 import express, { Express } from "express";
 import projectRoutes from "@/routes/projectRoutes";
 import workSpaceRoute from "@/routes/workSpaceRoute";
-import { ServerRoutes } from "./constants/ServerRoutes";
 import cors from "cors";
+import { ServerRoutes } from "./constants/ServerRoutes";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
