@@ -6,7 +6,7 @@ export const createProject = async (DATA: CreateProjectRequest) => {
     .from("projects")
     .insert([DATA])
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error(error);

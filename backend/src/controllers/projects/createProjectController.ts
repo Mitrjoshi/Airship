@@ -1,5 +1,5 @@
 import { CreateProjectRequest } from "@/interface/request";
-import { CreateProject } from "@/services/projectServices";
+import { createProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
@@ -8,7 +8,7 @@ export const createProjectController = async (
   res: Response
 ) => {
   try {
-    const data = await CreateProject(req.body);
+    const data = await createProject(req.body);
 
     const projectData = {
       projectId: data.id,

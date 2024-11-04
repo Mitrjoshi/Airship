@@ -6,7 +6,7 @@ export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
     .from("workspaces")
     .insert([DATA])
     .select()
-    .single();
+    .maybeSingle();
 
   if (data.error) {
     throw Error(data.error.message);
