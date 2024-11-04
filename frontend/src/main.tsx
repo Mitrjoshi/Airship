@@ -5,6 +5,7 @@ import "./index.css";
 import Root from "@/routes/Root";
 import Dashboard from "@/routes/Dashboard";
 import Workspace from "@/routes/Workspace";
+import Project from "./routes/Project";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "workspace/:workspaceId",
         element: <Workspace />,
+      },
+      {
+        path: "project/:projectId",
+        element: <Project />,
       },
     ],
   },
