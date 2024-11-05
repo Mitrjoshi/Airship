@@ -13,14 +13,20 @@ export default function Dashboard() {
       <TitleHeader
         title="Dashboard"
         headerRight={
-          <Button
-            onClick={() => {
-              navigate("/create-workspace");
-            }}
-            variant="outline"
-          >
-            Create Workspace
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Button variant="secondary" size="sm">
+              Join Workspace
+            </Button>
+            <Button
+              onClick={() => {
+                navigate("/create-workspace");
+              }}
+              variant="default"
+              size="sm"
+            >
+              Create Workspace
+            </Button>
+          </div>
         }
       />
       <div className="p-10">
@@ -29,13 +35,15 @@ export default function Dashboard() {
             <Link
               to={`/workspace/${workspace.id}`}
               key={workspace.id}
-              className="border flex flex-col justify-between p-4 rounded-lg bg-gray-900 w-96 h-36"
+              className="border flex flex-col justify-between p-4 rounded-lg bg-secondary w-96 h-36"
             >
-              <h3 className="mb-2 font-medium">{workspace.name}</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {workspace.description}
-              </p>
-              <span className="text-sm text-muted-foreground">
+              <div>
+                <h3 className="font-medium mb-2">{workspace.name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {workspace.description}
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground">
                 {formatDate(workspace.created_at)}
               </span>
             </Link>

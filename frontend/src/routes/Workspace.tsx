@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useCreateProject } from "@/services/useCreateProject";
 import { useGetProjects } from "@/services/useGetProjects";
+import { formatDate } from "@/utils/utils";
 
 export default function Workspace() {
   const { workspaceId } = useParams();
@@ -44,19 +45,19 @@ export default function Workspace() {
         headerRight={<CreateProjectDialog />}
       />
       <div className="p-10">
-        <div className="flex gap-6 mb-6">
+        <div className="flex items-start justify-start flex-wrap gap-6 mb-6">
           {projects?.data?.map((project) => (
             <Link
               to={`/project/${project.id}`}
               key={project.id}
-              className="border flex flex-col justify-between p-4 rounded-lg bg-gray-900 w-96"
+              className="border flex flex-col justify-between p-4 rounded-lg bg-secondary w-96"
             >
               <h3 className="mb-2">{project.name}</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 {project.description}
               </p>
               <span className="text-xs text-muted-foreground">
-                {String(project.created_at)}
+                {formatDate(project.created_at)}
               </span>
             </Link>
           ))}
@@ -117,7 +118,9 @@ function CreateProjectDialog() {
       }}
     >
       <DialogTrigger>
-        <Button variant="outline">Create Project +</Button>
+        <Button variant="default" size="sm">
+          New Project
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
@@ -156,9 +159,12 @@ function CreateProjectDialog() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="s3">S3</SelectItem>
-                      <SelectItem value="lambda">Lambda</SelectItem>
+                      <SelectItem value="static-site">Static Site</SelectItem>
+                      <SelectItem value="lambda">Lambda Function</SelectItem>
                       <SelectItem value="ec2">EC2</SelectItem>
+                      <SelectItem value="cdn">
+                        Content Delivery Network (CDN)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
