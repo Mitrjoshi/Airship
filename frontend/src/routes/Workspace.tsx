@@ -95,7 +95,6 @@ function CreateProjectDialog() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // setFormStep(formStep + 1);
 
     mutate({
       name: values.project_name,

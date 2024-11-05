@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import TitleHeader from "@/components/shared/TitleHeader";
 import { useGetWorkspaces } from "@/services/useGetWorkspaces";
 import { Link, useNavigate } from "react-router-dom";
+import { formatDate } from "@/utils/utils";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -28,14 +29,14 @@ export default function Dashboard() {
             <Link
               to={`/workspace/${workspace.id}`}
               key={workspace.id}
-              className="border flex flex-col justify-between p-4 rounded-lg bg-gray-900 w-96"
+              className="border flex flex-col justify-between p-4 rounded-lg bg-gray-900 w-96 h-36"
             >
-              <h3 className="mb-2">{workspace.name}</h3>
+              <h3 className="mb-2 font-medium">{workspace.name}</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 {workspace.description}
               </p>
-              <span className="text-xs text-muted-foreground">
-                {String(workspace.created_at)}
+              <span className="text-sm text-muted-foreground">
+                {formatDate(workspace.created_at)}
               </span>
             </Link>
           ))}
