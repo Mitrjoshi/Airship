@@ -63,10 +63,10 @@ const CreateWorkspace = () => {
       name: values.workspace_name,
       description: values.workspace_description,
       created_by: "35ed859f-0fb6-4c5d-8f27-45e13612beb8",
-      company_name: "Example Company",
+      company_name: values.workspace_name,
       access_key: values.workspace_access_key,
       secret_key: values.workspace_secret_key,
-      region: "us-east-1",
+      region: "ap-south-1",
     });
   }
 

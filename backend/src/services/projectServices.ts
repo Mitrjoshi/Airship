@@ -16,6 +16,8 @@ export const createProject = async (DATA: CreateProjectRequest) => {
   return ProjectData;
 };
 
+export const updateProject = async () => {};
+
 export const getProjects = async (WorkspaceId: string) => {
   const { data: projects, error } = await supabase
     .from("projects")

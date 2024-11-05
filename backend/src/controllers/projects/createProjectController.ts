@@ -1,6 +1,6 @@
 import { CreateProjectRequest } from "@/interface/request";
 import { createS3Bucket } from "@/services/AWSServices";
-import { createProject } from "@/services/projectServices";
+import { createProject, updateProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
@@ -9,30 +9,31 @@ export const createProjectController = async (
   res: Response
 ) => {
   try {
-    const data = await createProject(req.body);
-    const bucketName = data.name.toLowerCase().replace(/\s+/g, "-");
+    const BODY = req.body;
 
-    await createS3Bucket(bucketName, req.body.workspace_id);
+    const bucketName = BODY.name.toLowerCase().replace(/\s+/g, "-");
+    const bucketData = await createS3Bucket(bucketName, BODY.workspace_id);
 
-    const projectData = {
-      projectId: data.id,
-      name: data.name,
-      description: data.description,
-      created_by: data.created_by,
-      workspaceId: data.workspace_id,
-      createdBy: data.created_by,
-      service: data.service,
-    };
+    if (bucketData) {
+      const projectData: CreateProjectRequest = {
+        name: BODY.name,
+        description: BODY.description,
+        created_by: BODY.created_by,
+        service: BODY.service,
+        domain: bucketData,
+        bucket_name: bucketName,
+        workspace_id: BODY.workspace_id,
+        provider: BODY.provider,
+      };
 
-    res
-      .status(201)
-      .send(
-        createResponse(
-          true,
-          "Project and bucket Created Successfully",
-          projectData
-        )
-      );
+      const data = await createProject(projectData);
+
+      res
+        .status(201)
+        .send(
+          createResponse(true, "Project and bucket Created Successfully", data)
+        );
+    }
   } catch (error) {
     res.status(500).send(
       createResponse(false, "An unexpected error occurred.", null, {

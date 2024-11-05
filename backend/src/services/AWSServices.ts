@@ -38,7 +38,7 @@ export const fetchAWSCredentials = async (
 export const createS3Bucket = async (
   bucketName: string,
   workspaceId: string
-): Promise<string> => {
+): Promise<string | undefined> => {
   try {
     // Fetch AWS credentials for the specific workspace
     const { accessKeyId, secretAccessKey, region } = await fetchAWSCredentials(
@@ -58,18 +58,16 @@ export const createS3Bucket = async (
       region,
     });
 
-    const bucketParams = {
-      Bucket: bucketName,
-    };
-
     try {
       await s3.headBucket({ Bucket: bucketName }).promise();
-      console.log(`Bucket "${bucketName}" already exists.`);
     } catch (err: any) {
       if (err.statusCode === 404) {
         // Step 1: Create the bucket
-        await s3.createBucket(bucketParams).promise();
-        console.log(`Bucket "${bucketName}" created successfully.`);
+        await s3
+          .createBucket({
+            Bucket: bucketName,
+          })
+          .promise();
 
         // Step 2: Enable website hosting on the bucket
         const websiteParams = {
@@ -84,7 +82,6 @@ export const createS3Bucket = async (
           },
         };
         await s3.putBucketWebsite(websiteParams).promise();
-        console.log(`Website hosting enabled for bucket "${bucketName}".`);
 
         // Step 3: Disable Block Public Access
         await s3
@@ -98,7 +95,6 @@ export const createS3Bucket = async (
             },
           })
           .promise();
-        console.log(`Public access block disabled for bucket "${bucketName}".`);
 
         // Step 4: Set bucket policy to allow public access to objects
         const bucketPolicy = {
@@ -120,7 +116,6 @@ export const createS3Bucket = async (
             Policy: JSON.stringify(bucketPolicy),
           })
           .promise();
-        console.log(`Public access policy set for bucket "${bucketName}".`);
 
         // Step 5: Upload an index.html file
         await s3
@@ -131,7 +126,6 @@ export const createS3Bucket = async (
             ContentType: "text/html",
           })
           .promise();
-        console.log(`index.html uploaded to bucket "${bucketName}".`);
 
         // Step 6: Create CloudFront distribution
         const cloudFrontParams = {
@@ -172,9 +166,6 @@ export const createS3Bucket = async (
           .createDistribution(cloudFrontParams)
           .promise();
         const cloudFrontUrl = `https://${Distribution?.DomainName}/`;
-        console.log(
-          `CloudFront distribution created with URL: ${cloudFrontUrl}`
-        );
 
         // Return the CloudFront URL
         return cloudFrontUrl;
@@ -182,11 +173,6 @@ export const createS3Bucket = async (
         throw err;
       }
     }
-
-    // Construct the public URL for the static website
-    const publicUrl = `http://${bucketName}.s3-website-${region}.amazonaws.com/`;
-    console.log(`Static website URL: ${publicUrl}`);
-    return publicUrl;
   } catch (error) {
     console.error("Error in createS3Bucket:", error);
     throw error;

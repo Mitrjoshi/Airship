@@ -16,4 +16,5 @@ export interface CreateProjectRequest {
   created_by: string;
   provider?: "aws";
   workspace_id: string;
+  domain: string;
 }
