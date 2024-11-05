@@ -1,6 +1,20 @@
 import { indexPageContent } from "@/constants/PageContent";
 import { getAWSCredentials } from "./workspaceServices";
-import AWS from "aws-sdk";
+import {
+  S3Client,
+  CreateBucketCommand,
+  HeadBucketCommand,
+  PutBucketWebsiteCommand,
+  PutPublicAccessBlockCommand,
+  PutBucketPolicyCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
+import {
+  CloudFrontClient,
+  CreateDistributionCommand,
+  CreateDistributionCommandInput,
+  ViewerProtocolPolicy,
+} from "@aws-sdk/client-cloudfront";
 
 interface AWSCredentials {
   accessKeyId: string;
@@ -35,144 +49,159 @@ export const fetchAWSCredentials = async (
   }
 };
 
+const initializeS3Client = (credentials: AWSCredentials) => {
+  return new S3Client({
+    credentials: {
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+    },
+    region: credentials.region,
+  });
+};
+
+const initializeCloudFrontClient = (credentials: AWSCredentials) => {
+  return new CloudFrontClient({
+    credentials: {
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+    },
+    region: credentials.region,
+  });
+};
+
+const createBucket = async (s3Client: S3Client, bucketName: string) => {
+  try {
+    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
+  } catch (err: any) {
+    if (err.name === "NotFound") {
+      await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+    } else {
+      throw err;
+    }
+  }
+};
+
+const enableWebsiteHosting = async (s3Client: S3Client, bucketName: string) => {
+  const websiteParams = {
+    Bucket: bucketName,
+    WebsiteConfiguration: {
+      IndexDocument: { Suffix: "index.html" },
+      ErrorDocument: { Key: "error.html" },
+    },
+  };
+  await s3Client.send(new PutBucketWebsiteCommand(websiteParams));
+};
+
+const disablePublicAccess = async (s3Client: S3Client, bucketName: string) => {
+  await s3Client.send(
+    new PutPublicAccessBlockCommand({
+      Bucket: bucketName,
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: false,
+        IgnorePublicAcls: false,
+        BlockPublicPolicy: false,
+        RestrictPublicBuckets: false,
+      },
+    })
+  );
+};
+
+const setBucketPolicy = async (s3Client: S3Client, bucketName: string) => {
+  const bucketPolicy = {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Sid: "PublicReadGetObject",
+        Effect: "Allow",
+        Principal: "*",
+        Action: "s3:GetObject",
+        Resource: `arn:aws:s3:::${bucketName}/*`,
+      },
+    ],
+  };
+
+  await s3Client.send(
+    new PutBucketPolicyCommand({
+      Bucket: bucketName,
+      Policy: JSON.stringify(bucketPolicy),
+    })
+  );
+};
+
+const uploadIndexFile = async (s3Client: S3Client, bucketName: string) => {
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: "index.html",
+      Body: indexPageContent,
+      ContentType: "text/html",
+    })
+  );
+};
+
+const createCloudFrontDistribution = async (
+  cloudFrontClient: CloudFrontClient,
+  bucketName: string,
+  region: string
+): Promise<string | undefined> => {
+  const cloudFrontParams: CreateDistributionCommandInput = {
+    DistributionConfig: {
+      CallerReference: `${Date.now()}`,
+      Origins: {
+        Quantity: 1,
+        Items: [
+          {
+            Id: bucketName,
+            DomainName: `${bucketName}.s3.${region}.amazonaws.com`,
+            S3OriginConfig: { OriginAccessIdentity: "" },
+          },
+        ],
+      },
+      DefaultRootObject: "index.html",
+      DefaultCacheBehavior: {
+        TargetOriginId: bucketName,
+        ViewerProtocolPolicy: ViewerProtocolPolicy.redirect_to_https,
+        AllowedMethods: { Quantity: 2, Items: ["GET", "HEAD"] },
+        ForwardedValues: {
+          QueryString: false,
+          Cookies: { Forward: "none" },
+        },
+        MinTTL: 0,
+      },
+      Comment: "S3 static website with CloudFront HTTPS",
+      Enabled: true,
+    },
+  };
+
+  const { Distribution } = await cloudFrontClient.send(
+    new CreateDistributionCommand(cloudFrontParams)
+  );
+
+  return Distribution ? `https://${Distribution.DomainName}/` : undefined;
+};
+
 export const createS3Bucket = async (
   bucketName: string,
   workspaceId: string
 ): Promise<string | undefined> => {
   try {
-    // Fetch AWS credentials for the specific workspace
-    const { accessKeyId, secretAccessKey, region } = await fetchAWSCredentials(
-      workspaceId
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client(credentials);
+    const cloudFrontClient = initializeCloudFrontClient(credentials);
+
+    await createBucket(s3Client, bucketName);
+    await enableWebsiteHosting(s3Client, bucketName);
+    await disablePublicAccess(s3Client, bucketName);
+    await setBucketPolicy(s3Client, bucketName);
+    await uploadIndexFile(s3Client, bucketName);
+
+    const cloudFrontUrl = await createCloudFrontDistribution(
+      cloudFrontClient,
+      bucketName,
+      credentials.region
     );
 
-    // Initialize the S3 client with the fetched credentials
-    const s3 = new AWS.S3({
-      accessKeyId,
-      secretAccessKey,
-      region,
-    });
-
-    const cloudfront = new AWS.CloudFront({
-      accessKeyId,
-      secretAccessKey,
-      region,
-    });
-
-    try {
-      await s3.headBucket({ Bucket: bucketName }).promise();
-    } catch (err: any) {
-      if (err.statusCode === 404) {
-        // Step 1: Create the bucket
-        await s3
-          .createBucket({
-            Bucket: bucketName,
-          })
-          .promise();
-
-        // Step 2: Enable website hosting on the bucket
-        const websiteParams = {
-          Bucket: bucketName,
-          WebsiteConfiguration: {
-            IndexDocument: {
-              Suffix: "index.html",
-            },
-            ErrorDocument: {
-              Key: "error.html",
-            },
-          },
-        };
-        await s3.putBucketWebsite(websiteParams).promise();
-
-        // Step 3: Disable Block Public Access
-        await s3
-          .putPublicAccessBlock({
-            Bucket: bucketName,
-            PublicAccessBlockConfiguration: {
-              BlockPublicAcls: false,
-              IgnorePublicAcls: false,
-              BlockPublicPolicy: false,
-              RestrictPublicBuckets: false,
-            },
-          })
-          .promise();
-
-        // Step 4: Set bucket policy to allow public access to objects
-        const bucketPolicy = {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Sid: "PublicReadGetObject",
-              Effect: "Allow",
-              Principal: "*",
-              Action: "s3:GetObject",
-              Resource: `arn:aws:s3:::${bucketName}/*`,
-            },
-          ],
-        };
-
-        await s3
-          .putBucketPolicy({
-            Bucket: bucketName,
-            Policy: JSON.stringify(bucketPolicy),
-          })
-          .promise();
-
-        // Step 5: Upload an index.html file
-        await s3
-          .putObject({
-            Bucket: bucketName,
-            Key: "index.html",
-            Body: indexPageContent,
-            ContentType: "text/html",
-          })
-          .promise();
-
-        // Step 6: Create CloudFront distribution
-        const cloudFrontParams = {
-          DistributionConfig: {
-            CallerReference: `${Date.now()}`, // unique identifier
-            Origins: {
-              Quantity: 1,
-              Items: [
-                {
-                  Id: bucketName,
-                  DomainName: `${bucketName}.s3.${region}.amazonaws.com`, // Direct S3 bucket endpoint
-                  S3OriginConfig: {
-                    OriginAccessIdentity: "", // Empty if public access is allowed; use Origin Access Identity if restricted
-                  },
-                },
-              ],
-            },
-            DefaultRootObject: "index.html", // Set default root object
-            DefaultCacheBehavior: {
-              TargetOriginId: bucketName,
-              ViewerProtocolPolicy: "redirect-to-https",
-              AllowedMethods: {
-                Quantity: 2,
-                Items: ["GET", "HEAD"],
-              },
-              ForwardedValues: {
-                QueryString: false,
-                Cookies: { Forward: "none" },
-              },
-              MinTTL: 0,
-            },
-            Comment: "S3 static website with CloudFront HTTPS",
-            Enabled: true,
-          },
-        };
-
-        const { Distribution } = await cloudfront
-          .createDistribution(cloudFrontParams)
-          .promise();
-        const cloudFrontUrl = `https://${Distribution?.DomainName}/`;
-
-        // Return the CloudFront URL
-        return cloudFrontUrl;
-      } else {
-        throw err;
-      }
-    }
+    return cloudFrontUrl;
   } catch (error) {
     console.error("Error in createS3Bucket:", error);
     throw error;
