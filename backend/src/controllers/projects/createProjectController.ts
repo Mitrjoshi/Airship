@@ -28,11 +28,12 @@ export const createProjectController = async (
 
       const data = await createProject(projectData);
 
-      res
-        .status(201)
-        .send(
-          createResponse(true, "Project and bucket Created Successfully", data)
-        );
+      res.status(201).send(
+        createResponse(true, "Project and bucket Created Successfully", {
+          ...data,
+          projectId: data.id,
+        })
+      );
     }
   } catch (error) {
     res.status(500).send(
