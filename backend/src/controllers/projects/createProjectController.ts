@@ -10,9 +10,7 @@ export const createProjectController = async (
 ) => {
   try {
     const data = await createProject(req.body);
-    const bucketName = `project-${data.name
-      .toLowerCase()
-      .replace(/\s+/g, "-")}`;
+    const bucketName = data.name.toLowerCase().replace(/\s+/g, "-");
 
     await createS3Bucket(bucketName, req.body.workspace_id);
 
