@@ -6,12 +6,9 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get(ServerRoutes.workspace.index, getWorkspacesController);
+router.get("/", getWorkspacesController);
 
-router.get(
-  `${ServerRoutes.workspace.index}/:workspaceId`,
-  getProjectsController
-);
+router.get(`/:workspaceId`, getProjectsController);
 
 router.post(ServerRoutes.workspace.create, createWorkspaceController);
 

@@ -7,9 +7,6 @@ const router = Router();
 
 router.post(ServerRoutes.projects.create, createProjectController);
 router.post(ServerRoutes.projects.index, createProjectController);
-router.get(
-  `${ServerRoutes.projects.index}/:projectId`,
-  getSingleProjectController
-);
+router.get(`/:projectId`, getSingleProjectController);
 
 export default router;

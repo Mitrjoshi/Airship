@@ -19,7 +19,7 @@ export default function WorkspaceList() {
             </Button>
             <Button
               onClick={() => {
-                navigate("/create-workspace");
+                navigate("create");
               }}
               variant="default"
               size="sm"

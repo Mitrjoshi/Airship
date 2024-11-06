@@ -14,8 +14,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-app.use(workSpaceRoute);
-app.use(projectRoutes);
+app.use(ServerRoutes.workspace.index, workSpaceRoute);
+app.use(ServerRoutes.projects.index, projectRoutes);
 app.use(ServerRoutes.provider.index, providerRoutes);
 
 app.listen(port, async () => {

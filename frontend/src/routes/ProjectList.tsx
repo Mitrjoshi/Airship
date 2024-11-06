@@ -72,7 +72,7 @@ export default function ProjectList() {
         <div className="flex items-start justify-start flex-wrap gap-6 mb-6">
           {projects?.data?.map((project) => (
             <Link
-              to={`/project/${project.id}`}
+              to={project.id}
               key={project.id}
               className="border flex flex-col justify-between p-4 rounded-lg bg-secondary w-96"
             >

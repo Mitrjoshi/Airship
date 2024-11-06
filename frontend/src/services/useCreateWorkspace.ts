@@ -4,7 +4,7 @@ import { ApiResponse } from "@/types/response";
 import { CreateWorkspaceRequest } from "@/types/requests";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const createWorkspace = async (
   data: CreateWorkspaceRequest
@@ -16,11 +16,15 @@ const createWorkspace = async (
 export const useCreateWorkspace = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   return useMutation({
     mutationFn: createWorkspace,
     onSuccess: (data) => {
       if (data.data) {
-        navigate(`/workspace/${data.data.workspace_id}`);
+        navigate(pathname.replace("create", data.data.workspace_id), {
+          replace: true,
+        });
       }
     },
     onError: (error: any) => {
