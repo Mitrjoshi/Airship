@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGetSingleProject } from "@/services/useGetSingleProject";
 import { useParams } from "react-router-dom";
 
-const Project = () => {
+export default function ProjectDetails() {
   const { projectId } = useParams();
   const { toast } = useToast();
 
@@ -50,6 +50,4 @@ const Project = () => {
       </div>
     </div>
   );
-};
-
-export default Project;
+}

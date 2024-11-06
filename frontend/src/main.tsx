@@ -1,12 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+} from "react-router-dom";
 import "./index.css";
 import Root from "@/routes/Root";
-import Dashboard from "@/routes/Dashboard";
-import Workspace from "@/routes/Workspace";
-import Project from "./routes/Project";
 import CreateWorkspace from "./routes/CreateWorkspace";
+import CreateStaticWebsite from "./routes/CreateStaticWebsite";
+import WorkspaceList from "./routes/WorkspaceList";
+import ProjectList from "./routes/ProjectList";
+import ProjectDetails from "./routes/Project";
 
 const router = createBrowserRouter([
   {
@@ -15,19 +21,38 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <Navigate to="/workspace" />,
       },
       {
-        path: "create-workspace",
-        element: <CreateWorkspace />,
-      },
-      {
-        path: "workspace/:workspaceId",
-        element: <Workspace />,
-      },
-      {
-        path: "project/:projectId",
-        element: <Project />,
+        path: "workspace",
+        children: [
+          {
+            index: true,
+            element: <WorkspaceList />,
+          },
+          {
+            path: "create",
+            element: <CreateWorkspace />,
+          },
+          {
+            path: ":workspaceId",
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                element: <ProjectList />,
+              },
+              {
+                path: ":projectId",
+                element: <ProjectDetails />,
+              },
+              {
+                path: "create-static-website",
+                element: <CreateStaticWebsite />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

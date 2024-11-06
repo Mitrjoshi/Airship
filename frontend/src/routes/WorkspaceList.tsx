@@ -4,7 +4,7 @@ import { useGetWorkspaces } from "@/services/useGetWorkspaces";
 import { Link, useNavigate } from "react-router-dom";
 import { formatDate } from "@/utils/utils";
 
-export default function Dashboard() {
+export default function WorkspaceList() {
   const navigate = useNavigate();
   const { data: workspaces } = useGetWorkspaces();
 
