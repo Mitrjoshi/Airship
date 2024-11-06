@@ -23,6 +23,7 @@
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.682.0",
     "@aws-sdk/client-s3": "^3.685.0",
+    "@aws-sdk/s3-request-presigner": "^3.685.0",
     "@supabase/supabase-js": "^2.45.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

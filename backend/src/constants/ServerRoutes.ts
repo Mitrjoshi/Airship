@@ -25,4 +25,8 @@ export const ServerRoutes = {
     invite: "/invite",
     join: "/join",
   },
+  provider: {
+    index: "/provider",
+    createSignedUrl: "/create-signed-url",
+  },
 };

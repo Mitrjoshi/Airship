@@ -4,7 +4,9 @@ dotenv.config();
 import express, { Express } from "express";
 import projectRoutes from "@/routes/projectRoutes";
 import workSpaceRoute from "@/routes/workSpaceRoute";
+import providerRoutes from "@/routes/providerRoutes";
 import cors from "cors";
+import { ServerRoutes } from "./constants/ServerRoutes";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +16,7 @@ app.use(cors());
 
 app.use(workSpaceRoute);
 app.use(projectRoutes);
+app.use(ServerRoutes.provider.index, providerRoutes);
 
 app.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`);

@@ -1,5 +1,5 @@
 import { CreateProjectRequest } from "@/interface/request";
-import { createS3Bucket } from "@/services/AWSServices";
+import { createStaticWebsite } from "@/services/AWSServices";
 import { createProject, updateProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
@@ -12,7 +12,7 @@ export const createProjectController = async (
     const BODY = req.body;
 
     const bucketName = BODY.name.toLowerCase().replace(/\s+/g, "-");
-    const bucketData = await createS3Bucket(bucketName, BODY.workspace_id);
+    const bucketData = await createStaticWebsite(bucketName, BODY.workspace_id);
 
     if (bucketData) {
       const projectData: CreateProjectRequest = {

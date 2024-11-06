@@ -8,6 +8,7 @@ import {
   PutPublicAccessBlockCommand,
   PutBucketPolicyCommand,
   PutObjectCommand,
+  GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
@@ -15,6 +16,7 @@ import {
   CreateDistributionCommandInput,
   ViewerProtocolPolicy,
 } from "@aws-sdk/client-cloudfront";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 interface AWSCredentials {
   accessKeyId: string;
@@ -180,7 +182,7 @@ const createCloudFrontDistribution = async (
   return Distribution ? `https://${Distribution.DomainName}/` : undefined;
 };
 
-export const createS3Bucket = async (
+export const createStaticWebsite = async (
   bucketName: string,
   workspaceId: string
 ): Promise<string | undefined> => {
@@ -205,5 +207,23 @@ export const createS3Bucket = async (
   } catch (error) {
     console.error("Error in createS3Bucket:", error);
     throw error;
+  }
+};
+
+export const createSignedUrl = async (
+  bucketName: string,
+  workspaceId: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client(credentials);
+    const command = new GetObjectCommand({ Bucket: bucketName, Key: "/" });
+    const signedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 3600,
+    });
+
+    return signedUrl;
+  } catch (error) {
+    throw new Error("Failed to generate signed URL");
   }
 };
