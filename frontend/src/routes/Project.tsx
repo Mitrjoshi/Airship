@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import TitleHeader from "@/components/shared/TitleHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useGetSingleProject } from "@/services/useGetSingleProject";
 import { useParams } from "react-router-dom";
 
 const Project = () => {
   const { projectId } = useParams();
   const { toast } = useToast();
+
+  const { data } = useGetSingleProject(projectId as string);
 
   const handleFileChange = (event: { target: { files: any } }) => {
     const files = event.target.files;
@@ -17,6 +21,7 @@ const Project = () => {
 
       // Check if index.html exists
       const hasIndexHtml = Array.from(files).some(
+        //@ts-expect-error
         (file) => file.name === "index.html"
       );
 
@@ -29,7 +34,7 @@ const Project = () => {
 
   return (
     <div>
-      <TitleHeader title={`Project: ${projectId}`} />
+      <TitleHeader title={`Project: ${data?.data?.name ?? projectId}`} />
 
       <div className="p-10 flex justify-center items-center">
         <div>

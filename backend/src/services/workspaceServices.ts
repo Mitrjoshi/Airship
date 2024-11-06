@@ -1,3 +1,4 @@
+import { getRandomUuid } from "@/functions/getRandomUuid";
 import { I_CREATE_INTERFACE_BODY } from "@/interface/request";
 import { supabase } from "@/lib/supabase";
 
@@ -10,6 +11,7 @@ export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
         company_name: DATA.company_name,
         description: DATA.description,
         created_by: DATA.created_by,
+        id: getRandomUuid(),
       },
     ])
     .select()
@@ -39,7 +41,7 @@ export const getWorkspaces = async (userId: string) => {
   const { data: workspaces, error } = await supabase
     .from("workspaces")
     .select()
-    .eq("created_by", userId);
+    .eq("created_by", "123");
 
   if (error) {
     console.error(error);

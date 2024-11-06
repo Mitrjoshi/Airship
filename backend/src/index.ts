@@ -5,7 +5,6 @@ import express, { Express } from "express";
 import projectRoutes from "@/routes/projectRoutes";
 import workSpaceRoute from "@/routes/workSpaceRoute";
 import cors from "cors";
-import { ServerRoutes } from "./constants/ServerRoutes";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -13,8 +12,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-app.use(ServerRoutes.workspace.index, workSpaceRoute);
-app.use(ServerRoutes.projects.index, projectRoutes);
+app.use(workSpaceRoute);
+app.use(projectRoutes);
 
 app.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`);
