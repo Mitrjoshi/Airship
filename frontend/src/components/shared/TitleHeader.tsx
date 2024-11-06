@@ -23,7 +23,7 @@ const TitleHeader: React.FC<I_Prop> = ({ title, headerRight }) => {
         >
           <ArrowLeftIcon />
         </Button>
-        {title}
+        <h1 className="text-xl font-semibold">{title}</h1>
       </div>
       {headerRight && <div>{headerRight}</div>}
     </header>

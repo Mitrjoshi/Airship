@@ -4,7 +4,7 @@ import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
 export const getWorkspacesController = async (req: Request, res: Response) => {
-  let userId = "35ed859f-0fb6-4c5d-8f27-45e13612beb8";
+  let userId = "123";
   try {
     //Fetch workspace details
     const workspaces = await getWorkspaces(userId);
