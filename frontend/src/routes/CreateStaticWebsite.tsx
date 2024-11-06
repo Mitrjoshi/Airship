@@ -3,6 +3,7 @@ import { useCreateProject } from "@/services/useCreateProject";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
+import { Switch } from "@/components/ui/switch";
 
 export default function CreateStaticWebsite() {
   const { workspaceId } = useParams();
@@ -35,6 +37,7 @@ export default function CreateStaticWebsite() {
       .max(63, {
         message: "Bucket name must be at most 63 characters.",
       }),
+    caching: z.boolean().default(false).optional(),
   });
 
   //api hooks
@@ -84,16 +87,67 @@ export default function CreateStaticWebsite() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="project_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="bucket_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project name</FormLabel>
+                  <FormLabel>Bucket name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter project name" {...field} />
+                    <Input placeholder="Enter bucket name" {...field} />
                   </FormControl>
                   <FormMessage />
+                  {/* <div className="flex items-center space-x-2">
+                    <a
+                      className="text-sm"
+                      href="http://"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      See rules
+                    </a>
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  </div> */}
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="caching"
+              render={({ field }) => (
+                <FormItem className="border rounded-lg p-4">
+                  <div className="flex flex-row items-start justify-between">
+                    <FormLabel className="text-sm">
+                      Default Cache Behavior
+                    </FormLabel>
+
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormDescription>
+                    Configure CloudFront cache behavior for static S3 content.
+                    Set cache-control, protocols, and TTL to optimize delivery
+                    and control update frequency.
+                  </FormDescription>
                 </FormItem>
               )}
             />
