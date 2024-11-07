@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
+  Link,
   Navigate,
   Outlet,
   RouterProvider,
@@ -13,44 +14,49 @@ import CreateStaticWebsite from "./routes/CreateStaticWebsite";
 import WorkspaceList from "./routes/WorkspaceList";
 import ProjectList from "./routes/ProjectList";
 import ProjectDetails from "./routes/Project";
+import { Button } from "./components/ui/button";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: (
+      <div className="p-6">
+        Landing page
+        <div className="mt-2">
+          <Link to="/workspace">
+            <Button>Login</Button>
+          </Link>
+        </div>
+      </div>
+    ),
+  },
+  {
+    path: "/workspace",
     element: <Root />,
     children: [
       {
         index: true,
-        element: <Navigate to="/workspace" />,
+        element: <WorkspaceList />,
       },
       {
-        path: "workspace",
+        path: "create",
+        element: <CreateWorkspace />,
+      },
+      {
+        path: ":workspaceId",
+        element: <Outlet />,
         children: [
           {
             index: true,
-            element: <WorkspaceList />,
+            element: <ProjectList />,
           },
           {
-            path: "create",
-            element: <CreateWorkspace />,
+            path: ":projectId",
+            element: <ProjectDetails />,
           },
           {
-            path: ":workspaceId",
-            element: <Outlet />,
-            children: [
-              {
-                index: true,
-                element: <ProjectList />,
-              },
-              {
-                path: ":projectId",
-                element: <ProjectDetails />,
-              },
-              {
-                path: "create-static-website",
-                element: <CreateStaticWebsite />,
-              },
-            ],
+            path: "create-static-website",
+            element: <CreateStaticWebsite />,
           },
         ],
       },

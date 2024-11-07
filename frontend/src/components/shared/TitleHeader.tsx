@@ -12,9 +12,9 @@ const TitleHeader: React.FC<I_Prop> = ({ title, headerRight }) => {
   const navigate = useNavigate();
 
   return (
-    <header className="p-4 border-b flex justify-between items-center">
+    <header className="px-6 py-4 border-b flex justify-between items-center">
       <div className="flex gap-4 items-center">
-        <Button
+        {/* <Button
           onClick={() => {
             navigate(-1);
           }}
@@ -22,8 +22,8 @@ const TitleHeader: React.FC<I_Prop> = ({ title, headerRight }) => {
           variant={"outline"}
         >
           <ArrowLeftIcon />
-        </Button>
-        <h1 className="text-xl font-semibold">{title}</h1>
+        </Button> */}
+        <h1 className="text-lg font-semibold">{title}</h1>
       </div>
       {headerRight && <div>{headerRight}</div>}
     </header>

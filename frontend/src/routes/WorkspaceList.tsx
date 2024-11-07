@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import TitleHeader from "@/components/shared/TitleHeader";
 import { useGetWorkspaces } from "@/services/useGetWorkspaces";
 import { Link, useNavigate } from "react-router-dom";
 import { formatDate } from "@/utils/utils";
@@ -10,11 +9,11 @@ export default function WorkspaceList() {
 
   return (
     <div>
-      <TitleHeader
-        title="Dashboard"
-        headerRight={
+      <div className="px-10 py-6 max-w-7xl mx-auto">
+        <header className="flex items-center justify-between mb-10">
+          <h2 className="font-semibold text-xl">Workspaces</h2>
           <div className="flex items-center space-x-4">
-            <Button variant="secondary" size="sm">
+            <Button variant="outline" size="sm">
               Join Workspace
             </Button>
             <Button
@@ -27,15 +26,13 @@ export default function WorkspaceList() {
               Create Workspace
             </Button>
           </div>
-        }
-      />
-      <div className="p-10">
-        <div className="flex flex-wrap gap-6 mb-8">
+        </header>
+        <div className="grid grid-cols-3 gap-6">
           {workspaces?.data?.map((workspace) => (
             <Link
               to={`/workspace/${workspace.id}`}
               key={workspace.id}
-              className="border flex flex-col justify-between p-4 rounded-lg bg-secondary w-96 h-36"
+              className="border flex flex-col justify-between p-4 rounded-lg bg-secondary h-40"
             >
               <div>
                 <h3 className="font-medium mb-2">{workspace.name}</h3>
