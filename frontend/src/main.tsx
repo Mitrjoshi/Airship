@@ -13,6 +13,7 @@ import CreateStaticWebsite from "./routes/CreateStaticWebsite";
 import WorkspaceList from "./routes/WorkspaceList";
 import ProjectList from "./routes/ProjectList";
 import ProjectDetails from "./routes/Project";
+import EditWorkspace from "./routes/EditWorkspace";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <ProjectList />,
+              },
+              {
+                path: "edit",
+                element: <EditWorkspace />,
               },
               {
                 path: ":projectId",

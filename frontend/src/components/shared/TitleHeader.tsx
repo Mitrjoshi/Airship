@@ -4,11 +4,10 @@ import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface I_Prop {
-  title: string;
   headerRight?: ReactNode;
 }
 
-const TitleHeader: React.FC<I_Prop> = ({ title, headerRight }) => {
+const TitleHeader: React.FC<I_Prop> = ({ headerRight }) => {
   const navigate = useNavigate();
 
   return (
@@ -23,7 +22,7 @@ const TitleHeader: React.FC<I_Prop> = ({ title, headerRight }) => {
         >
           <ArrowLeftIcon />
         </Button>
-        <h1 className="text-xl font-semibold">{title}</h1>
+        <h1 className="text-xl font-extrabold">Airship</h1>
       </div>
       {headerRight && <div>{headerRight}</div>}
     </header>

@@ -42,7 +42,7 @@ const CreateWorkspace = () => {
       }),
   });
 
-  const { mutate } = useCreateWorkspace();
+  const { mutate, isPending } = useCreateWorkspace();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,7 +72,7 @@ const CreateWorkspace = () => {
 
   return (
     <div>
-      <TitleHeader title="Create Workspace" />
+      <TitleHeader />
       <div className="p-10">
         <div className="flex flex-wrap justify-center items-center gap-6 mb-8">
           <Form {...form}>
@@ -165,7 +165,12 @@ const CreateWorkspace = () => {
                 )}
               />
 
-              <Button className="w-full" type="submit" disabled={!isValid}>
+              <Button
+                loading={isPending}
+                className="w-full"
+                type="submit"
+                disabled={!isValid}
+              >
                 Create Workspace
               </Button>
             </form>

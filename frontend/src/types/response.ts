@@ -17,6 +17,7 @@ export interface getProjectsResponse {
   provider: string;
   workspace_id: string;
   created_by: string;
+  domain: string;
 }
 
 export interface getWorkspacesResponse {

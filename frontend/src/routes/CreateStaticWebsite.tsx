@@ -41,7 +41,7 @@ export default function CreateStaticWebsite() {
   });
 
   //api hooks
-  const { mutate } = useCreateProject();
+  const { mutate, isPending } = useCreateProject();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,7 +67,7 @@ export default function CreateStaticWebsite() {
   }
   return (
     <div>
-      <TitleHeader title="Create Static Website" />
+      <TitleHeader />
       <div className="p-10">
         <Form {...form}>
           <form
@@ -152,7 +152,7 @@ export default function CreateStaticWebsite() {
               )}
             />
 
-            <Button className="w-full" type="submit">
+            <Button loading={isPending} className="w-full" type="submit">
               Create
             </Button>
           </form>

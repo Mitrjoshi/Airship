@@ -34,7 +34,7 @@ export default function ProjectDetails() {
 
   return (
     <div>
-      <TitleHeader title={`Project: ${data?.data?.name ?? projectId}`} />
+      <TitleHeader />
 
       <div className="p-10 flex justify-center items-center">
         <div>

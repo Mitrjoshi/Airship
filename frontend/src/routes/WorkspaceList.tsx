@@ -1,17 +1,18 @@
 import { Button } from "@/components/ui/button";
 import TitleHeader from "@/components/shared/TitleHeader";
 import { useGetWorkspaces } from "@/services/useGetWorkspaces";
-import { Link, useNavigate } from "react-router-dom";
-import { formatDate } from "@/utils/utils";
+import { useNavigate } from "react-router-dom";
+import MainLayout from "@/components/layouts/MainLayout";
+import { WorkspaceCards } from "@/components/cards/WorkspaceCards";
+import { Loading } from "@/components/shared/Loading";
 
 export default function WorkspaceList() {
   const navigate = useNavigate();
-  const { data: workspaces } = useGetWorkspaces();
+  const { data: workspaces, isLoading } = useGetWorkspaces();
 
   return (
-    <div>
+    <>
       <TitleHeader
-        title="Dashboard"
         headerRight={
           <div className="flex items-center space-x-4">
             <Button variant="secondary" size="sm">
@@ -29,27 +30,18 @@ export default function WorkspaceList() {
           </div>
         }
       />
-      <div className="p-10">
-        <div className="flex flex-wrap gap-6 mb-8">
-          {workspaces?.data?.map((workspace) => (
-            <Link
-              to={`/workspace/${workspace.id}`}
-              key={workspace.id}
-              className="border flex flex-col justify-between p-4 rounded-lg bg-secondary w-96 h-36"
-            >
-              <div>
-                <h3 className="font-medium mb-2">{workspace.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {workspace.description}
-                </p>
-              </div>
-              <span className="text-xs text-muted-foreground">
-                {formatDate(workspace.created_at)}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
+
+      <MainLayout className="p-10">
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div className="grid grid-cols-3 gap-6">
+            {workspaces?.data?.map((workspace, index) => (
+              <WorkspaceCards key={index} data={workspace} />
+            ))}
+          </div>
+        )}
+      </MainLayout>
+    </>
   );
 }
