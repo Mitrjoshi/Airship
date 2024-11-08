@@ -1,32 +1,16 @@
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { ReactNode } from "react";
-import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
+import { ReactNode } from 'react'
 
-interface I_Prop {
-  headerRight?: ReactNode;
+interface TitleHeaderProps {
+  title: string
+  element?: ReactNode
 }
 
-const TitleHeader: React.FC<I_Prop> = ({ headerRight }) => {
-  const navigate = useNavigate();
-
+export default function TitleHeader({ title, element }: TitleHeaderProps) {
   return (
-    <header className="p-4 border-b flex justify-between items-center">
-      <div className="flex gap-4 items-center">
-        <Button
-          onClick={() => {
-            navigate(-1);
-          }}
-          size={"icon"}
-          variant={"outline"}
-        >
-          <ArrowLeftIcon />
-        </Button>
-        <h1 className="text-xl font-extrabold">Airship</h1>
-      </div>
-      {headerRight && <div>{headerRight}</div>}
-    </header>
-  );
-};
+    <header className='mb-10 flex items-center justify-between'>
+      <h2 className='text-xl font-semibold'>{title}</h2>
 
-export default TitleHeader;
+      {element && element}
+    </header>
+  )
+}
