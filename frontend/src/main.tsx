@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Link, Navigate, Outlet, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Link, Outlet, RouterProvider } from 'react-router-dom'
 import './index.css'
 import Root from '@/routes/Root'
 import CreateWorkspace from './routes/CreateWorkspace'

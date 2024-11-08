@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ServerRoutes } from '@/constants'
 import { useToast } from '@/hooks/use-toast'
 import { ApiResponse } from '@/types/response'
@@ -7,6 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 interface getSignedURLRequest {
   bucketName: string
   workspaceId: string
+  fileKeys: string[]
 }
 
 const getSignedURL = async (data: getSignedURLRequest): Promise<ApiResponse> => {

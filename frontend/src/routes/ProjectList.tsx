@@ -1,60 +1,51 @@
-import TitleHeader from "@/components/shared/TitleHeader";
-import { Link, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+// import TitleHeader from '@/components/shared/TitleHeader'
+import { useParams } from 'react-router-dom'
+// import { Button } from '@/components/ui/button'
 
-import { useGetProjects } from "@/services/useGetProjects";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { useGetProjects } from '@/services/useGetProjects'
+// import { ChevronDownIcon } from '@radix-ui/react-icons'
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  CloudIcon,
-  GlobeAltIcon,
-  ServerStackIcon,
-} from "@heroicons/react/24/outline";
-import MainLayout from "@/components/layouts/MainLayout";
-import { ProjectsCards } from "@/components/cards/ProjectsCards";
-import { Loading } from "@/components/shared/Loading";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuGroup,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger
+// } from '@/components/ui/dropdown-menu'
+// import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/outline'
+import { ProjectsCards } from '@/components/cards/ProjectsCards'
+import { Loading } from '@/components/shared/Loading'
 
 export default function ProjectList() {
-  const { workspaceId } = useParams();
+  const { workspaceId } = useParams()
 
-  const { data: projects, isLoading } = useGetProjects(workspaceId as string);
+  const { data: projects, isLoading } = useGetProjects(workspaceId as string)
 
   return (
     <>
-      <TitleHeader
+      {/* <TitleHeader
         headerRight={
-          <div className="flex gap-2 items-center">
+          <div className='flex items-center gap-2'>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="default" size="sm">
+                <Button variant='default' size='sm'>
                   Add New... <ChevronDownIcon />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align='end'>
                 <DropdownMenuLabel>Deployment Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <Link to="create-static-website">
+                  <Link to='create-static-website'>
                     <DropdownMenuItem>
                       <GlobeAltIcon strokeWidth={2} />
                       <span>Static Website</span>
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem>
-                    <img
-                      className="size-4 invert mix-blend-difference"
-                      src="/lambda.png"
-                      alt=""
-                    />
+                    <img className='size-4 mix-blend-difference invert' src='/lambda.png' alt='' />
                     <span>Lambda Function</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
@@ -70,19 +61,15 @@ export default function ProjectList() {
             </DropdownMenu>
           </div>
         }
-      />
+      /> */}
 
-      <MainLayout className="p-10">
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <div className="grid grid-cols-3 gap-6">
-            {projects?.data?.map((project, index) => (
-              <ProjectsCards key={index} data={project} />
-            ))}
-          </div>
-        )}
-      </MainLayout>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className='grid grid-cols-3 gap-6'>
+          {projects?.data?.map((project, index) => <ProjectsCards key={index} data={project} />)}
+        </div>
+      )}
     </>
-  );
+  )
 }

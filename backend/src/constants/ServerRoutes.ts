@@ -28,5 +28,6 @@ export const ServerRoutes = {
   provider: {
     index: "/provider",
     createSignedUrl: "/create-signed-url",
+    uploadFile: "/upload-file",
   },
 };
