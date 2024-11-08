@@ -52,12 +52,15 @@ export const fetchAWSCredentials = async (
 };
 
 const initializeS3Client = (credentials: AWSCredentials) => {
+  console.log("Credentials:", credentials);
+
   return new S3Client({
     credentials: {
       accessKeyId: credentials.accessKeyId,
       secretAccessKey: credentials.secretAccessKey,
     },
     region: credentials.region,
+    endpoint: `https://s3.${credentials.region}.amazonaws.com`,
   });
 };
 
