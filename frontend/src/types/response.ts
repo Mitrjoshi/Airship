@@ -29,3 +29,12 @@ export interface getWorkspacesResponse {
   description: string | null
   created_by: string
 }
+
+export interface WorkspaceDetailsResponse {
+  created_at: Date
+  name: string
+  company_name: string
+  description: string
+  created_by: string
+  id: string
+}

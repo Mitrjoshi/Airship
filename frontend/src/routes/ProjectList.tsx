@@ -17,26 +17,26 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/outline'
 import PageContainer from '@/components/shared/PageContainer'
+import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
 
 export default function ProjectList() {
   const { workspaceId } = useParams()
 
   const { data: projects } = useGetProjects(workspaceId as string)
+  const { data: workspaceData } = useGetWorkspaceDetails(workspaceId as string)
 
   return (
     <PageContainer>
-      <TitleHeader title={`Workspace: ${workspaceId}`} element={<DeploymentDropdown />} />
-      <div className='mb-6 flex flex-wrap items-start justify-start gap-6'>
+      <TitleHeader title={workspaceData?.data?.name || 'Workspace Name'} showBackBtn element={<DeploymentDropdown />} />
+      <div className='grid grid-cols-3 gap-6'>
         {projects?.data?.map((project) => (
-          <Link
-            to={project.id}
+          <ProjectCard
             key={project.id}
-            className='flex w-96 flex-col justify-between rounded-lg border bg-secondary p-4'
-          >
-            <h3 className='mb-2'>{project.name}</h3>
-            <p className='mb-4 text-sm text-muted-foreground'>{project.description}</p>
-            <span className='text-xs text-muted-foreground'>{formatDate(project.created_at)}</span>
-          </Link>
+            name={project.name}
+            description={project.description}
+            created_at={project.created_at}
+            link={project.id}
+          />
         ))}
       </div>
     </PageContainer>
@@ -76,5 +76,23 @@ function DeploymentDropdown() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+interface ProjectCardProps {
+  name: string
+  description: string | null
+  created_at: Date
+  link: string
+}
+function ProjectCard({ name, description, created_at, link }: ProjectCardProps) {
+  return (
+    <Link to={link} className='flex h-40 flex-col justify-between rounded-lg border bg-secondary p-4'>
+      <div>
+        <h3 className='mb-2 font-medium'>{name}</h3>
+        <p className='text-sm text-muted-foreground'>{description || 'No description provided.'}</p>
+      </div>
+      <span className='text-xs text-muted-foreground'>{formatDate(created_at)}</span>
+    </Link>
   )
 }

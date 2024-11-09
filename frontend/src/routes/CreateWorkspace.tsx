@@ -1,9 +1,9 @@
-import PageContainer from '@/components/shared/PageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreateWorkspace } from '@/services/useCreateWorkspace'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -27,6 +27,7 @@ const CreateWorkspace = () => {
         message: 'Secret access key must be length of 40.'
       })
       .max(40),
+    workspace_region: z.string(),
     agree: z
       .boolean({
         message: 'Please agree to the Terms and Conditions.'
@@ -45,6 +46,7 @@ const CreateWorkspace = () => {
       workspace_description: '',
       workspace_access_key: '',
       workspace_secret_key: '',
+      workspace_region: '',
       agree: false // Default agree to false
     },
     mode: 'onChange' // Validates form on each change
@@ -60,13 +62,13 @@ const CreateWorkspace = () => {
       company_name: values.workspace_name,
       access_key: values.workspace_access_key,
       secret_key: values.workspace_secret_key,
-      region: 'ap-south-1'
+      region: values.workspace_region
     })
   }
 
   return (
-    <div className='mx-auto max-w-lg'>
-      <TitleHeader title='Create Workspace' />
+    <div className='mx-auto max-w-xl px-10 py-10'>
+      <TitleHeader title='Create Workspace' showBackBtn />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           <FormField
@@ -125,6 +127,27 @@ const CreateWorkspace = () => {
 
           <FormField
             control={form.control}
+            name='workspace_region'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Region</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select your region' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='ap-south-1'>ap-south-1</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name='agree'
             render={({ field }) => (
               <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
@@ -132,10 +155,10 @@ const CreateWorkspace = () => {
                   <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <div className='space-y-1 leading-none'>
-                  <FormLabel>
-                    I agree to securely share my keys, acknowledging they will be protected with the utmost security
-                    measures.
-                  </FormLabel>
+                  <FormLabel>I agree to securely share my credentials.</FormLabel>
+                  <FormDescription>
+                    Your credentials will be protected with the utmost security measures.
+                  </FormDescription>
                 </div>
               </FormItem>
             )}

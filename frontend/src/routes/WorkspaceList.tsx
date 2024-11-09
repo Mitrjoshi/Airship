@@ -18,7 +18,7 @@ export default function WorkspaceList() {
             name={workspace.name}
             description={workspace.description}
             created_at={workspace.created_at}
-            link={`/workspace/${workspace.id}`}
+            link={workspace.id}
           />
         ))}
       </div>

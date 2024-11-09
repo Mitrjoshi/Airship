@@ -1,3 +1,4 @@
+import PageContainer from '@/components/shared/PageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -46,8 +47,8 @@ export default function ProjectDetails() {
   }
 
   return (
-    <div>
-      <TitleHeader title={`Project: ${data?.data?.name ?? projectId}`} />
+    <PageContainer>
+      <TitleHeader title={data?.data?.name || 'Project Name'} showBackBtn />
 
       <div className='flex items-center justify-center p-10'>
         <div>
@@ -62,6 +63,6 @@ export default function ProjectDetails() {
           <Button onClick={onSubmit}>Upload</Button>
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }
