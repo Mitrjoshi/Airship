@@ -50,6 +50,20 @@ export const getWorkspaces = async (userId: string) => {
   return workspaces;
 };
 
+export const getWorkspaceById = async (workspaceId: string) => {
+  const { data: workspaceData, error } = await supabase
+    .from("workspaces")
+    .select()
+    .eq("id", workspaceId)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return workspaceData;
+};
+
 export const getAWSCredentials = async (workspaceId: string) => {
   const { data: credentials, error } = await supabase
     .from("credentials")
