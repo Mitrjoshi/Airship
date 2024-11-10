@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGetPresignedURLs } from '@/services/useGetSignedURL'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
+import { getFileWithPath } from '@/utils/fileUtils'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -24,14 +25,14 @@ export default function ProjectDetails() {
   // Handle folder selection and extract relative paths
   const handleFolderSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files
-    if (!fileList) return
 
-    const filesArray: FileWithMetadata[] = Array.from(fileList).map((file) => ({
-      file,
-      path: file.webkitRelativePath // Retain folder structure for S3
-    }))
+    const parentFolder = fileList?.[0]?.webkitRelativePath?.split('/')[0] || ''
 
-    setFiles(filesArray)
+    const selectedFiles = Array.from(event.target.files || [])
+
+    const processedFiles = getFileWithPath(selectedFiles, parentFolder)
+
+    setFiles(processedFiles)
   }
 
   // Upload files to S3 using pre-signed URLs
