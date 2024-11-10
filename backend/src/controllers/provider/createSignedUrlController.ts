@@ -1,34 +1,31 @@
-import { createSignedUrl } from "@/services/AWSServices";
+import { DistFileData } from "@/interface/request";
+import { createSignedUrl, generatePresignedUrls } from "@/services/AWSServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
-interface I_Resquest {
+interface GetPresignedUrlsRequest {
   bucketName: string;
   workspaceId: string;
+  distFiles: DistFileData[];
 }
 
-export const createSignedUrlController = async (
-  req: Request<{}, {}, I_Resquest>,
+export const getPresignedUrlsController = async (
+  req: Request<{}, {}, GetPresignedUrlsRequest>,
   res: Response
-) => {
+): Promise<void> => {
+  const { workspaceId, bucketName, distFiles } = req.body;
+
   try {
-    const { bucketName, workspaceId } = req.body;
-
-    const signedUrl = await createSignedUrl(bucketName, workspaceId);
-
-    if (signedUrl) {
-      res
-        .status(200)
-        .send(
-          createResponse(true, "Signed Url created successfully.", signedUrl)
-        );
-    } else {
-      res.status(200).send(
-        createResponse(false, "An unexpected error occurred.", null, {
-          message: "Unable to create signed url.",
-        })
+    const presignedURLs = await generatePresignedUrls(
+      workspaceId,
+      distFiles,
+      bucketName
+    );
+    res
+      .status(200)
+      .send(
+        createResponse(true, "Signed Url created successfully.", presignedURLs)
       );
-    }
   } catch (error) {
     res.status(500).send(
       createResponse(false, "An unexpected error occurred.", null, {
@@ -37,3 +34,34 @@ export const createSignedUrlController = async (
     );
   }
 };
+
+// export const createSignedUrlController = async (
+//   req: Request<{}, {}, I_Resquest>,
+//   res: Response
+// ) => {
+//   try {
+//     const { bucketName, workspaceId } = req.body;
+
+//     const signedUrl = await createSignedUrl(bucketName, workspaceId);
+
+//     if (signedUrl) {
+//       res
+//         .status(200)
+//         .send(
+//           createResponse(true, "Signed Url created successfully.", signedUrl)
+//         );
+//     } else {
+//       res.status(200).send(
+//         createResponse(false, "An unexpected error occurred.", null, {
+//           message: "Unable to create signed url.",
+//         })
+//       );
+//     }
+//   } catch (error) {
+//     res.status(500).send(
+//       createResponse(false, "An unexpected error occurred.", null, {
+//         message: (error as Error).message,
+//       })
+//     );
+//   }
+// };

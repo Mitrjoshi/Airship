@@ -3,52 +3,70 @@ import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
-import { useGetSignedURL } from '@/services/useGetSignedURL'
+import { useGetPresignedURLs } from '@/services/useGetSignedURL'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
+import axios from 'axios'
+import { ChangeEvent, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+interface FileWithMetadata {
+  file: File
+  path: string // Path relative to the folder
+}
+
 export default function ProjectDetails() {
-  const { projectId } = useParams()
-  const { toast } = useToast()
+  const { projectId, workspaceId } = useParams()
+  const { data: projectData } = useGetSingleProject(projectId as string)
+  const { mutate: mutatePresignedURLs, isPending: isUploading } = useGetPresignedURLs()
 
-  const { data } = useGetSingleProject(projectId as string)
-  const { mutate } = useGetSignedURL()
+  const [files, setFiles] = useState<FileWithMetadata[]>([])
 
-  const handleFileChange = (event: { target: { files: any } }) => {
-    const files = event.target.files
+  // Handle folder selection and extract relative paths
+  const handleFolderSelect = async (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files
+    if (!fileList) return
 
-    if (files) {
-      console.log('Selected files:', files)
+    const filesArray: FileWithMetadata[] = Array.from(fileList).map((file) => ({
+      file,
+      path: file.webkitRelativePath // Retain folder structure for S3
+    }))
 
-      // Check if index.html exists
-      const hasIndexHtml = Array.from(files).some(
-        //@ts-expect-error
-        (file) => file.name === 'index.html'
-      )
-
-      if (!hasIndexHtml)
-        return toast({
-          title: 'Uh oh! index.html is missing.'
-        })
-    }
+    setFiles(filesArray)
   }
 
-  const onSubmit = () => {
-    mutate(
+  // Upload files to S3 using pre-signed URLs
+  const uploadFiles = () => {
+    mutatePresignedURLs(
       {
-        bucketName: data?.data?.bucket_name!,
-        workspaceId: data?.data?.workspace_id!
+        workspaceId: workspaceId!,
+        bucketName: projectData?.data?.bucket_name!,
+        distFiles: files.map((f) => ({ path: f.path, type: f.file.type }))
       },
       {
-        onSuccess: (data) => {}
+        onSuccess: async (data) => {
+          if (!data?.data) return
+          const urls = data.data
+          await Promise.all(
+            files.map(async (fileWithMeta) => {
+              const { file, path } = fileWithMeta
+              const urlObj = urls.find((urlObj: { path: string }) => urlObj.path === path)
+
+              if (urlObj) {
+                // Use the pre-signed URL to upload the file
+                await axios.put(urlObj.url, file, {
+                  headers: { 'Content-Type': file.type }
+                })
+              }
+            })
+          )
+        }
       }
     )
   }
 
   return (
     <PageContainer>
-      <TitleHeader title={data?.data?.name || 'Project Name'} showBackBtn />
+      <TitleHeader title={projectData?.data?.name || 'Project Name'} showBackBtn />
 
       <div className='flex items-center justify-center p-10'>
         <div>
@@ -56,11 +74,13 @@ export default function ProjectDetails() {
           <Input
             id='folder'
             type='file'
-            onChange={handleFileChange}
+            onChange={handleFolderSelect}
             multiple
             {...({ webkitdirectory: 'true', directory: 'true' } as any)}
           />
-          <Button onClick={onSubmit}>Upload</Button>
+          <Button onClick={uploadFiles} disabled={isUploading || files.length === 0}>
+            {isUploading ? 'Uploading...' : 'Upload Files'}
+          </Button>
         </div>
       </div>
     </PageContainer>

@@ -38,3 +38,8 @@ export interface WorkspaceDetailsResponse {
   created_by: string
   id: string
 }
+
+export interface PresignedUrlResponse {
+  url: string
+  path: string
+}

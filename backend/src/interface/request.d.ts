@@ -18,3 +18,8 @@ export interface CreateProjectRequest {
   workspace_id: string;
   domain: string;
 }
+
+export interface DistFileData {
+  path: string;
+  type: string;
+}

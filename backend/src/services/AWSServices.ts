@@ -9,6 +9,7 @@ import {
   PutBucketPolicyCommand,
   PutObjectCommand,
   GetObjectCommand,
+  PutBucketCorsCommand,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
@@ -17,6 +18,7 @@ import {
   ViewerProtocolPolicy,
 } from "@aws-sdk/client-cloudfront";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { DistFileData } from "@/interface/request";
 
 interface AWSCredentials {
   accessKeyId: string;
@@ -52,8 +54,6 @@ export const fetchAWSCredentials = async (
 };
 
 const initializeS3Client = (credentials: AWSCredentials) => {
-  console.log("Credentials:", credentials);
-
   return new S3Client({
     credentials: {
       accessKeyId: credentials.accessKeyId,
@@ -83,6 +83,31 @@ const createBucket = async (s3Client: S3Client, bucketName: string) => {
     } else {
       throw err;
     }
+  }
+};
+
+const setBucketCors = async (s3Client: S3Client, bucketName: string) => {
+  const corsConfiguration = {
+    Bucket: bucketName,
+    CORSConfiguration: {
+      CORSRules: [
+        {
+          AllowedHeaders: ["*"],
+          AllowedMethods: ["GET", "PUT", "POST"],
+          AllowedOrigins: ["*"], // Replace with specific origins if needed
+          ExposeHeaders: [],
+          MaxAgeSeconds: 3000, // Optional: Cache time for the preflight response
+        },
+      ],
+    },
+  };
+
+  try {
+    await s3Client.send(new PutBucketCorsCommand(corsConfiguration));
+    console.log("CORS configuration successfully set for the bucket");
+  } catch (error) {
+    console.error("Error setting CORS configuration:", error);
+    throw error;
   }
 };
 
@@ -119,7 +144,7 @@ const setBucketPolicy = async (s3Client: S3Client, bucketName: string) => {
         Sid: "PublicReadGetObject",
         Effect: "Allow",
         Principal: "*",
-        Action: "s3:GetObject",
+        Action: ["s3:GetObject", "s3:PutObject"],
         Resource: `arn:aws:s3:::${bucketName}/*`,
       },
     ],
@@ -195,6 +220,7 @@ export const createStaticWebsite = async (
     const cloudFrontClient = initializeCloudFrontClient(credentials);
 
     await createBucket(s3Client, bucketName);
+    await setBucketCors(s3Client, bucketName);
     await enableWebsiteHosting(s3Client, bucketName);
     await disablePublicAccess(s3Client, bucketName);
     await setBucketPolicy(s3Client, bucketName);
@@ -210,6 +236,37 @@ export const createStaticWebsite = async (
   } catch (error) {
     console.error("Error in createS3Bucket:", error);
     throw error;
+  }
+};
+
+export const generatePresignedUrls = async (
+  workspaceId: string,
+  distFiles: DistFileData[],
+  bucketName: string
+): Promise<{ url: string; path: string }[]> => {
+  console.log("files:", distFiles);
+
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client(credentials);
+    const presignedURLs = await Promise.all(
+      distFiles.map(async (file) => {
+        const command = new PutObjectCommand({
+          Bucket: bucketName,
+          Key: file.path, // Path in S3, keeping folder structure
+          ContentType: file.type,
+        });
+        const signedUrl = await getSignedUrl(s3Client, command, {
+          expiresIn: 60,
+        });
+        return { url: signedUrl, path: file.path };
+      })
+    );
+
+    return presignedURLs;
+  } catch (error) {
+    console.error("Error generating pre-signed URLs", error);
+    throw new Error("Error generating pre-signed URLs");
   }
 };
 
