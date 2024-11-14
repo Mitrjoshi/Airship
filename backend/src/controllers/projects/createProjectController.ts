@@ -11,8 +11,10 @@ export const createProjectController = async (
   try {
     const BODY = req.body;
 
-    const bucketName = BODY.name.toLowerCase().replace(/\s+/g, "-");
-    const bucketData = await createStaticWebsite(bucketName, BODY.workspace_id);
+    const bucketData = await createStaticWebsite(
+      BODY.bucket_name,
+      BODY.workspace_id
+    );
 
     if (bucketData) {
       const projectData: CreateProjectRequest = {
@@ -21,7 +23,7 @@ export const createProjectController = async (
         created_by: BODY.created_by,
         service: BODY.service,
         domain: bucketData,
-        bucket_name: bucketName,
+        bucket_name: BODY.bucket_name,
         workspace_id: BODY.workspace_id,
         provider: BODY.provider,
       };
@@ -30,7 +32,6 @@ export const createProjectController = async (
 
       res.status(201).send(
         createResponse(true, "Project and bucket Created Successfully", {
-          ...data,
           projectId: data.id,
         })
       );

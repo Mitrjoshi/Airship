@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { useParams } from 'react-router-dom'
 import { Switch } from '@/components/ui/switch'
+import { FormPageContainer } from '@/components/shared/FormPageContainer'
 
 export default function CreateStaticWebsite() {
   const { workspaceId } = useParams()
@@ -28,7 +29,7 @@ export default function CreateStaticWebsite() {
       .max(63, {
         message: 'Bucket name must be at most 63 characters.'
       }),
-    caching: z.boolean().default(false).optional()
+    defaultCacheBehavior: z.boolean().default(false)
   })
 
   //api hooks
@@ -39,13 +40,12 @@ export default function CreateStaticWebsite() {
     defaultValues: {
       project_name: '',
       project_description: '',
-      bucket_name: ''
+      bucket_name: '',
+      defaultCacheBehavior: false
     }
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-
     mutate({
       name: values.project_name.trim(),
       description: values.project_description?.trim(),
@@ -53,11 +53,12 @@ export default function CreateStaticWebsite() {
       created_by: '123',
       workspace_id: workspaceId as string,
       provider: 'aws',
-      bucket_name: values.bucket_name.trim()
+      bucket_name: values.bucket_name.trim(),
+      defaultCacheBehavior: values.defaultCacheBehavior
     })
   }
   return (
-    <div className='mx-auto max-w-xl px-10 py-10'>
+    <FormPageContainer>
       <TitleHeader title='Create Static Website' showBackBtn />
 
       <Form {...form}>
@@ -115,7 +116,7 @@ export default function CreateStaticWebsite() {
 
           <FormField
             control={form.control}
-            name='caching'
+            name='defaultCacheBehavior'
             render={({ field }) => (
               <FormItem className='rounded-lg border p-4'>
                 <div className='flex flex-row items-start justify-between'>
@@ -138,6 +139,6 @@ export default function CreateStaticWebsite() {
           </Button>
         </form>
       </Form>
-    </div>
+    </FormPageContainer>
   )
 }

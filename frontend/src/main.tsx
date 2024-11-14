@@ -7,7 +7,7 @@ import CreateWorkspace from './routes/CreateWorkspace'
 import CreateStaticWebsite from './routes/CreateStaticWebsite'
 import WorkspaceList from './routes/WorkspaceList'
 import ProjectList from './routes/ProjectList'
-import ProjectDetails from './routes/Project'
+import ProjectDetails from './routes/ProjectDetails'
 import { Button } from './components/ui/button'
 
 const router = createBrowserRouter([

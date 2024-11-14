@@ -1,3 +1,4 @@
+import { FormPageContainer } from '@/components/shared/FormPageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -67,7 +68,7 @@ const CreateWorkspace = () => {
   }
 
   return (
-    <div className='mx-auto max-w-xl px-10 py-10'>
+    <FormPageContainer>
       <TitleHeader title='Create Workspace' showBackBtn />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
@@ -169,7 +170,7 @@ const CreateWorkspace = () => {
           </Button>
         </form>
       </Form>
-    </div>
+    </FormPageContainer>
   )
 }
 

@@ -17,6 +17,7 @@ export interface CreateProjectRequest {
   provider?: "aws";
   workspace_id: string;
   domain: string;
+  defaultCacheBehavior?: boolean;
 }
 
 export interface DistFileData {

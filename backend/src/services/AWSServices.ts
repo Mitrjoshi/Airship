@@ -10,6 +10,8 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   PutBucketCorsCommand,
+  PutBucketVersioningCommand,
+  BucketVersioningStatus,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
@@ -169,6 +171,26 @@ const uploadIndexFile = async (s3Client: S3Client, bucketName: string) => {
   );
 };
 
+// const enableBucketVersioning = async (
+//   s3Client: S3Client,
+//   bucketName: string
+// ) => {
+//   const versioningParams = {
+//     Bucket: bucketName,
+//     VersioningConfiguration: {
+//       Status: BucketVersioningStatus.Enabled,
+//     },
+//   };
+
+//   try {
+//     await s3Client.send(new PutBucketVersioningCommand(versioningParams));
+//     console.log(`Bucket versioning enabled for ${bucketName}`);
+//   } catch (error) {
+//     console.error("Error enabling bucket versioning:", error);
+//     throw error;
+//   }
+// };
+
 const createCloudFrontDistribution = async (
   cloudFrontClient: CloudFrontClient,
   bucketName: string,
@@ -225,6 +247,7 @@ export const createStaticWebsite = async (
     await disablePublicAccess(s3Client, bucketName);
     await setBucketPolicy(s3Client, bucketName);
     await uploadIndexFile(s3Client, bucketName);
+    // await enableBucketVersioning(s3Client, bucketName);
 
     const cloudFrontUrl = await createCloudFrontDistribution(
       cloudFrontClient,
