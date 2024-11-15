@@ -8,6 +8,11 @@ export interface ApiResponse<T = any> {
   }
 }
 
+export interface getUserDetaills {
+  id: string
+  username: string
+}
+
 export interface getProjectsResponse {
   id: string
   created_at: Date
@@ -19,6 +24,7 @@ export interface getProjectsResponse {
   created_by: string
   bucket_name: string
   domain: string
+  users: getUserDetaills
 }
 
 export interface getWorkspacesResponse {

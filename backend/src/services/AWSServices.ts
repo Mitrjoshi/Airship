@@ -106,9 +106,7 @@ const setBucketCors = async (s3Client: S3Client, bucketName: string) => {
 
   try {
     await s3Client.send(new PutBucketCorsCommand(corsConfiguration));
-    console.log("CORS configuration successfully set for the bucket");
   } catch (error) {
-    console.error("Error setting CORS configuration:", error);
     throw error;
   }
 };
@@ -267,8 +265,6 @@ export const generatePresignedUrls = async (
   distFiles: DistFileData[],
   bucketName: string
 ): Promise<{ url: string; path: string }[]> => {
-  console.log("files:", distFiles);
-
   try {
     const credentials = await fetchAWSCredentials(workspaceId);
     const s3Client = initializeS3Client(credentials);

@@ -38,7 +38,7 @@ export const getSingleProject = async (
 ) => {
   const { data: projects, error } = await supabase
     .from("projects")
-    .select()
+    .select("*, users ( username )")
     .eq("id", projectId)
     // .eq("workspace_id", workspaceId)
     .maybeSingle();
