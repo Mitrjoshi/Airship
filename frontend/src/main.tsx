@@ -9,6 +9,7 @@ import WorkspaceList from './routes/WorkspaceList'
 import ProjectList from './routes/ProjectList'
 import ProjectDetails from './routes/ProjectDetails'
 import { Button } from './components/ui/button'
+import FolderViewer from './routes/FileViewer'
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
         </div>
       </div>
     )
+  },
+  {
+    path: 'test',
+    element: <FolderViewer />
   },
   {
     path: '/workspace',
