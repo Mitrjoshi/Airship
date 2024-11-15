@@ -171,7 +171,7 @@ export default function ProjectDetails() {
               </ul>
             </div>
 
-            {/* <div>
+            <div>
               {files.length > 0 ? (
                 <>
                   <div className='flex w-full items-center justify-between gap-2'>
@@ -199,7 +199,7 @@ export default function ProjectDetails() {
                 </>
               ) : (
                 <div {...getRootProps({ style })}>
-                  <input id='folder' {...{ directory: 'true' }} {...getInputProps()} />
+                  <input id='folder' {...{ webkitdirectory: 'true', directory: 'true' }} {...getInputProps()} />
                   {isDragActive ? (
                     <p>Drop the files here ...</p>
                   ) : (
@@ -207,7 +207,7 @@ export default function ProjectDetails() {
                   )}
                 </div>
               )}
-            </div> */}
+            </div>
           </TabsContent>
           <TabsContent value='deployments'></TabsContent>
         </Tabs>
