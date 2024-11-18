@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { formatDate } from '@/utils/utils'
 import PageContainer from '@/components/shared/PageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
+import { CommitIcon, PersonIcon, PlusIcon } from '@radix-ui/react-icons'
+import { MergeIcon } from 'lucide-react'
 
 export default function WorkspaceList() {
   const { data: workspaces } = useGetWorkspaces()
@@ -49,6 +51,7 @@ function HeaderElement() {
   return (
     <div className='flex items-center space-x-4'>
       <Button variant='outline' size='sm'>
+        <PersonIcon className='h-4 w-4' />
         Join Workspace
       </Button>
       <Button
@@ -58,6 +61,7 @@ function HeaderElement() {
         variant='default'
         size='sm'
       >
+        <PlusIcon className='h-4 w-4' />
         Create Workspace
       </Button>
     </div>

@@ -12,6 +12,7 @@ import { useDropzone } from 'react-dropzone'
 import { formatDate } from '@/utils/utils'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PlusIcon } from '@radix-ui/react-icons'
 
 interface FileWithMetadata {
   file: File
@@ -127,9 +128,9 @@ export default function ProjectDetails() {
               Add Domain
             </Button>
 
-            <Button variant='outline' size='sm'>
-              <ExternalLink />
-              Visit
+            <Button size='sm'>
+              <PlusIcon />
+              New Deployment
             </Button>
           </div>
         }
