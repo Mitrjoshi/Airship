@@ -1,4 +1,5 @@
-import { CodeXml, FileSpreadsheet } from 'lucide-react'
+import { FolderIcon } from '@heroicons/react/24/solid'
+import { ChevronDownIcon, FileTextIcon } from '@radix-ui/react-icons'
 import React, { useState } from 'react'
 
 interface FileNode {
@@ -60,35 +61,6 @@ export default function FolderViewer() {
 
 function Folder({ folder }: { folder: FileNode }) {
   const [isOpen, setIsOpen] = useState(true)
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split('.').pop()?.toLowerCase()
-
-    switch (extension) {
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return '🖼'
-      case 'pdf':
-        return '📄'
-      case 'doc':
-      case 'docx':
-        return '📃'
-
-      case 'mp3':
-      case 'wav':
-        return '🎵'
-      case 'mp4':
-      case 'avi':
-      case 'mkv':
-        return '🎥'
-      case 'zip':
-      case 'rar':
-        return '📦'
-      default:
-        return '📄'
-    }
-  }
 
   return (
     <li className='my-1.5' key={folder.name}>
@@ -96,32 +68,14 @@ function Folder({ folder }: { folder: FileNode }) {
         <div className='flex items-center gap-1.5'>
           {folder.nodes && folder.nodes.length > 0 && (
             <button onClick={() => setIsOpen(!isOpen)}>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 20 20'
-                fill='currentColor'
-                className={`size-4 text-gray-500 ${isOpen ? 'rotate-90' : ''}`}
-              >
-                <path
-                  fillRule='evenodd'
-                  d='M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z'
-                  clipRule='evenodd'
-                />
-              </svg>
+              <ChevronDownIcon className={`size-4 text-gray-500 ${isOpen ? 'rotate-90' : ''}`} />
             </button>
           )}
 
           {folder.nodes ? (
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='currentColor'
-              className={`size-5 text-sky-500 ${folder.nodes.length === 0 ? 'ml-5' : ''}`}
-            >
-              <path d='M19.5 21a3 3 0 0 0 3-3v-4.5a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3V18a3 3 0 0 0 3 3h15ZM1.5 10.146V6a3 3 0 0 1 3-3h5.379a2.25 2.25 0 0 1 1.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 0 1 3 3v1.146A4.483 4.483 0 0 0 19.5 9h-15a4.483 4.483 0 0 0-3 1.146Z' />
-            </svg>
+            <FolderIcon className={`size-5 text-sky-500 ${folder.nodes.length === 0 ? 'ml-5' : ''}`} />
           ) : (
-            <span className='ml-5 size-5 text-gray-950'>{getFileIcon(folder.name)}</span>
+            <FileTextIcon className='h-4 w-4' strokeWidth={1.5} />
           )}
           {folder.name}
         </div>

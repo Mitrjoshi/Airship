@@ -7,12 +7,14 @@ import { getFileWithPath } from '@/utils/fileUtils'
 import axios from 'axios'
 import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ExternalLink, File, Globe, RotateCcw } from 'lucide-react'
+import { ExternalLink, File, Globe, RotateCcw, SettingsIcon } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import { formatDate } from '@/utils/utils'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PlusIcon } from '@radix-ui/react-icons'
+import { DotsHorizontalIcon, PlusIcon, UpdateIcon } from '@radix-ui/react-icons'
+import { LinkPreview } from '@dhaiwat10/react-link-preview'
+import { getProjectsResponse } from '@/types/response'
 
 interface FileWithMetadata {
   file: File
@@ -119,24 +121,26 @@ export default function ProjectDetails() {
         element={
           <div className='flex items-center gap-2'>
             <Button variant='outline' size='sm'>
-              <RotateCcw />
+              <RotateCcw className='h-4 w-4' />
               Instant rollback
             </Button>
 
             <Button variant='outline' size='sm'>
-              <Globe />
-              Add Domain
+              <SettingsIcon className='h-4 w-4' />
+              Configurations
             </Button>
 
             <Button size='sm'>
-              <PlusIcon />
+              <PlusIcon className='h-4 w-4' />
               New Deployment
             </Button>
           </div>
         }
       />
 
-      {projectData?.data && (
+      <OverviewCard projectData={projectData?.data} />
+
+      {/* {projectData?.data && (
         <Tabs defaultValue='project'>
           <TabsList className='w-full justify-start'>
             <TabsTrigger value='project'>Project</TabsTrigger>
@@ -171,8 +175,8 @@ export default function ProjectDetails() {
                 </li>
               </ul>
             </div>
-
-            {/* <div>
+            <LinkPreview url='https://milka-siwm-ge-24.onmlab.in' width='400px' />;
+            <div>
               {files.length > 0 ? (
                 <>
                   <div className='flex w-full items-center justify-between gap-2'>
@@ -208,11 +212,54 @@ export default function ProjectDetails() {
                   )}
                 </div>
               )}
-            </div> */}
+            </div>
           </TabsContent>
           <TabsContent value='deployments'></TabsContent>
         </Tabs>
-      )}
+      )} */}
     </PageContainer>
+  )
+}
+
+interface OverviewCardProps {
+  projectData: getProjectsResponse | undefined
+}
+function OverviewCard({ projectData }: OverviewCardProps) {
+  return (
+    <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
+      <div className='aspect-video h-auto w-full max-w-md rounded-lg bg-secondary'></div>
+      <ul className='relative space-y-4 text-sm'>
+        <li>
+          <p className='text-muted-foreground'>Bucket name</p>
+          <p>{projectData?.bucket_name}</p>
+        </li>
+        <li>
+          <p className='text-muted-foreground'>Deployment URL</p>
+          <a href={projectData?.domain} target='_blank' className='text-blue-400 underline'>
+            {projectData?.domain}
+          </a>
+        </li>
+        <li className='flex gap-6'>
+          <div>
+            <p className='text-muted-foreground'>Status</p>
+            <p className='flex items-center gap-1.5'>
+              <span className='h-2.5 w-2.5 rounded-full bg-green-500'></span>
+              <span>Active</span>
+            </p>
+          </div>
+          <div>
+            <p className='text-muted-foreground'>Created</p>
+            <p>18/11/2022 15:31 by Koushik</p>
+          </div>
+        </li>
+        <li>
+          <p className='text-muted-foreground'>Deployment message</p>
+          <p>Initial deployment</p>
+        </li>
+      </ul>
+      <Button className='absolute right-6 top-6' variant='outline' size='icon'>
+        <UpdateIcon className='h-4 w-4' />
+      </Button>
+    </div>
   )
 }

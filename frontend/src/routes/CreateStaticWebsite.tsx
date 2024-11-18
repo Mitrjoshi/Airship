@@ -120,7 +120,26 @@ export default function CreateStaticWebsite() {
             render={({ field }) => (
               <FormItem className='rounded-lg border p-4'>
                 <div className='flex flex-row items-start justify-between'>
-                  <FormLabel className='text-sm'>Default Cache Behavior</FormLabel>
+                  <FormLabel className='text-sm'>Use multiple environments</FormLabel>
+
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </div>
+                <FormDescription>
+                  This will create two S3 buckets for the same project, one for staging and one for production
+                </FormDescription>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='defaultCacheBehavior'
+            render={({ field }) => (
+              <FormItem className='rounded-lg border p-4'>
+                <div className='flex flex-row items-start justify-between'>
+                  <FormLabel className='text-sm'>Default cache behavior</FormLabel>
 
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
