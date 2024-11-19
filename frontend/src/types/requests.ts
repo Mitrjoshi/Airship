@@ -5,7 +5,6 @@ export interface CreateWorkspaceRequest {
   created_by: string
   access_key: string
   secret_key: string
-  region: string
 }
 
 export interface CreateProjectRequest {
@@ -16,5 +15,5 @@ export interface CreateProjectRequest {
   created_by: string
   provider?: 'aws'
   workspace_id: string
-  defaultCacheBehavior: boolean
+  multipleEnv: boolean
 }
