@@ -29,7 +29,8 @@ export default function CreateStaticWebsite() {
       .max(63, {
         message: 'Bucket name must be at most 63 characters.'
       }),
-    multipleEnv: z.boolean().default(false)
+    multipleEnv: z.boolean().default(false),
+    region: z.string().default('ap-south-1')
   })
 
   //api hooks
@@ -40,8 +41,7 @@ export default function CreateStaticWebsite() {
     defaultValues: {
       project_name: '',
       project_description: '',
-      bucket_name: '',
-      multipleEnv: false
+      bucket_name: ''
     }
   })
 
@@ -49,12 +49,11 @@ export default function CreateStaticWebsite() {
     mutate({
       name: values.project_name.trim(),
       description: values.project_description?.trim(),
-      service: 's3',
+      type: 'static-website',
       created_by: '123',
       workspace_id: workspaceId as string,
-      provider: 'aws',
       bucket_name: values.bucket_name.trim(),
-      multipleEnv: values.multipleEnv
+      region: values.region
     })
   }
   return (

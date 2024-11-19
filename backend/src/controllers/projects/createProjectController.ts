@@ -11,21 +11,23 @@ export const createProjectController = async (
   try {
     const BODY = req.body;
 
-    const bucketData = await createStaticWebsite(
+    const cloudFrontData = await createStaticWebsite(
       BODY.bucket_name,
-      BODY.workspace_id
+      BODY.workspace_id,
+      BODY.region
     );
 
-    if (bucketData) {
+    if (cloudFrontData) {
       const projectData: CreateProjectRequest = {
         name: BODY.name,
         description: BODY.description,
         created_by: BODY.created_by,
-        service: BODY.service,
-        domain: bucketData,
+        type: BODY.type,
         bucket_name: BODY.bucket_name,
         workspace_id: BODY.workspace_id,
-        provider: BODY.provider,
+        distribution_id: cloudFrontData.id,
+        cloudfront_url: cloudFrontData.url,
+        region: BODY.region,
       };
 
       const data = await createProject(projectData);

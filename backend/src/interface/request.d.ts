@@ -12,12 +12,12 @@ export interface CreateProjectRequest {
   name: string;
   bucket_name: string;
   description?: string;
-  service: "s3" | "lambda" | "ec2";
+  type: "static-website" | "lambda" | "ec2";
   created_by: string;
-  provider?: "aws";
   workspace_id: string;
-  domain: string;
-  defaultCacheBehavior?: boolean;
+  region: string;
+  distribution_id?: string;
+  cloudfront_url?: string;
 }
 
 export interface DistFileData {

@@ -43,6 +43,7 @@ export interface WorkspaceDetailsResponse {
   description: string
   created_by: string
   id: string
+  projects: getProjectsResponse[]
 }
 
 export interface PresignedUrlResponse {

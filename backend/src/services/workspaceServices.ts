@@ -26,7 +26,6 @@ export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
       workspace_id: data.data?.id,
       access_key: DATA.access_key,
       secret_key: DATA.secret_key,
-      region: DATA.region,
     },
   ]);
 
@@ -53,7 +52,9 @@ export const getWorkspaces = async (userId: string) => {
 export const getWorkspaceById = async (workspaceId: string) => {
   const { data: workspaceData, error } = await supabase
     .from("workspaces")
-    .select()
+    .select(
+      "*, projects ( id, name, type, created_at, description, environment, users ( id, username ) )"
+    )
     .eq("id", workspaceId)
     .maybeSingle();
 

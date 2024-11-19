@@ -1,8 +1,6 @@
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-
-import { useGetProjects } from '@/services/useGetProjects'
 import { formatDate } from '@/utils/utils'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 
@@ -22,14 +20,13 @@ import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
 export default function ProjectList() {
   const { workspaceId } = useParams()
 
-  const { data: projects } = useGetProjects(workspaceId as string)
   const { data: workspaceData } = useGetWorkspaceDetails(workspaceId as string)
 
   return (
     <PageContainer>
       <TitleHeader title={workspaceData?.data?.name || 'Workspace Name'} showBackBtn element={<DeploymentDropdown />} />
       <div className='grid grid-cols-3 gap-6'>
-        {projects?.data?.map((project) => (
+        {workspaceData?.data?.projects?.map((project) => (
           <ProjectCard
             key={project.id}
             name={project.name}

@@ -36,18 +36,14 @@ export const fetchAWSCredentials = async (
     const credentials = await getAWSCredentials(workspaceId);
 
     // Validate that all required fields are present
-    if (
-      !credentials.access_key ||
-      !credentials.secret_key ||
-      !credentials.region
-    ) {
+    if (!credentials.access_key || !credentials.secret_key) {
       throw new Error("Incomplete AWS credentials found in the database.");
     }
 
     return {
       accessKeyId: credentials.access_key,
       secretAccessKey: credentials.secret_key,
-      region: credentials.region,
+      region: "",
     };
   } catch (error) {
     console.error("Error fetching AWS credentials:", error);
@@ -193,7 +189,7 @@ const createCloudFrontDistribution = async (
   cloudFrontClient: CloudFrontClient,
   bucketName: string,
   region: string
-): Promise<string | undefined> => {
+): Promise<{ url: string; id: string } | void> => {
   const cloudFrontParams: CreateDistributionCommandInput = {
     DistributionConfig: {
       CallerReference: `${Date.now()}`,
@@ -227,17 +223,24 @@ const createCloudFrontDistribution = async (
     new CreateDistributionCommand(cloudFrontParams)
   );
 
-  return Distribution ? `https://${Distribution.DomainName}/` : undefined;
+  return {
+    url: `https://${Distribution?.DomainName}`,
+    id: Distribution?.Id!,
+  };
 };
 
 export const createStaticWebsite = async (
   bucketName: string,
-  workspaceId: string
-): Promise<string | undefined> => {
+  workspaceId: string,
+  region: string
+): Promise<{ url: string; id: string } | void> => {
   try {
     const credentials = await fetchAWSCredentials(workspaceId);
-    const s3Client = initializeS3Client(credentials);
-    const cloudFrontClient = initializeCloudFrontClient(credentials);
+    const s3Client = initializeS3Client({ ...credentials, region });
+    const cloudFrontClient = initializeCloudFrontClient({
+      ...credentials,
+      region,
+    });
 
     await createBucket(s3Client, bucketName);
     await setBucketCors(s3Client, bucketName);
@@ -250,7 +253,7 @@ export const createStaticWebsite = async (
     const cloudFrontUrl = await createCloudFrontDistribution(
       cloudFrontClient,
       bucketName,
-      credentials.region
+      region
     );
 
     return cloudFrontUrl;
