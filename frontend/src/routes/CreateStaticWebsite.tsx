@@ -29,7 +29,7 @@ export default function CreateStaticWebsite() {
       .max(63, {
         message: 'Bucket name must be at most 63 characters.'
       }),
-    defaultCacheBehavior: z.boolean().default(false)
+    multipleEnv: z.boolean().default(false)
   })
 
   //api hooks
@@ -41,7 +41,7 @@ export default function CreateStaticWebsite() {
       project_name: '',
       project_description: '',
       bucket_name: '',
-      defaultCacheBehavior: false
+      multipleEnv: false
     }
   })
 
@@ -54,7 +54,7 @@ export default function CreateStaticWebsite() {
       workspace_id: workspaceId as string,
       provider: 'aws',
       bucket_name: values.bucket_name.trim(),
-      defaultCacheBehavior: values.defaultCacheBehavior
+      multipleEnv: values.multipleEnv
     })
   }
   return (
@@ -116,7 +116,7 @@ export default function CreateStaticWebsite() {
 
           <FormField
             control={form.control}
-            name='defaultCacheBehavior'
+            name='multipleEnv'
             render={({ field }) => (
               <FormItem className='rounded-lg border p-4'>
                 <div className='flex flex-row items-start justify-between'>
@@ -128,26 +128,6 @@ export default function CreateStaticWebsite() {
                 </div>
                 <FormDescription>
                   This will create two S3 buckets for the same project, one for staging and one for production
-                </FormDescription>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='defaultCacheBehavior'
-            render={({ field }) => (
-              <FormItem className='rounded-lg border p-4'>
-                <div className='flex flex-row items-start justify-between'>
-                  <FormLabel className='text-sm'>Default cache behavior</FormLabel>
-
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </div>
-                <FormDescription>
-                  Configure CloudFront cache behavior for static S3 content. Set cache-control, protocols, and TTL to
-                  optimize delivery and control update frequency.
                 </FormDescription>
               </FormItem>
             )}

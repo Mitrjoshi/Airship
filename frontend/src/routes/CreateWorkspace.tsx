@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreateWorkspace } from '@/services/useCreateWorkspace'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -28,7 +27,6 @@ const CreateWorkspace = () => {
         message: 'Secret access key must be length of 40.'
       })
       .max(40),
-    workspace_region: z.string(),
     agree: z
       .boolean({
         message: 'Please agree to the Terms and Conditions.'
@@ -47,7 +45,6 @@ const CreateWorkspace = () => {
       workspace_description: '',
       workspace_access_key: '',
       workspace_secret_key: '',
-      workspace_region: '',
       agree: false // Default agree to false
     },
     mode: 'onChange' // Validates form on each change
@@ -62,8 +59,7 @@ const CreateWorkspace = () => {
       created_by: '123',
       company_name: values.workspace_name,
       access_key: values.workspace_access_key,
-      secret_key: values.workspace_secret_key,
-      region: values.workspace_region
+      secret_key: values.workspace_secret_key
     })
   }
 
@@ -121,27 +117,6 @@ const CreateWorkspace = () => {
                 <FormControl>
                   <Input placeholder='Your AWS Secret Access Key' {...field} />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name='workspace_region'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Region</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder='Select your region' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value='ap-south-1'>ap-south-1</SelectItem>
-                  </SelectContent>
-                </Select>
                 <FormMessage />
               </FormItem>
             )}
