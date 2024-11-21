@@ -7,9 +7,11 @@ import CreateWorkspace from './routes/CreateWorkspace'
 import CreateStaticWebsite from './routes/CreateStaticWebsite'
 import WorkspaceList from './routes/WorkspaceList'
 import ProjectList from './routes/ProjectList'
-import ProjectDetails from './routes/ProjectDetails'
+import ProjectPage from './routes/ProjectPage'
 import { Button } from './components/ui/button'
-import FolderViewer from './routes/FileViewer'
+import UploadFiles from './routes/UploadFiles'
+import ProjectDetails from './routes/ProjectDetails'
+import { ProjectConfiguration } from './routes/ProjectConfiguration'
 
 const router = createBrowserRouter([
   {
@@ -24,10 +26,6 @@ const router = createBrowserRouter([
         </div>
       </div>
     )
-  },
-  {
-    path: 'test',
-    element: <FolderViewer />
   },
   {
     path: '/workspace',
@@ -51,7 +49,21 @@ const router = createBrowserRouter([
           },
           {
             path: ':projectId',
-            element: <ProjectDetails />
+            element: <ProjectPage />,
+            children: [
+              {
+                index: true,
+                element: <ProjectDetails />
+              },
+              {
+                path: 'upload',
+                element: <UploadFiles />
+              },
+              {
+                path: 'config',
+                element: <ProjectConfiguration />
+              }
+            ]
           },
           {
             path: 'create-static-website',

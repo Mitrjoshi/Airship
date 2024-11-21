@@ -1,3 +1,8 @@
+import {
+  ItemSelection,
+  ViewerProtocolPolicy,
+} from "@aws-sdk/client-cloudfront";
+
 export interface I_CREATE_INTERFACE_BODY {
   name: string;
   company_name: string;
@@ -18,6 +23,7 @@ export interface CreateProjectRequest {
   region: string;
   distribution_id?: string;
   cloudfront_url?: string;
+  environment: "staging" | "production";
 }
 
 export interface DistFileData {

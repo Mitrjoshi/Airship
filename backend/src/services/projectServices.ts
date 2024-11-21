@@ -3,18 +3,29 @@ import { CreateProjectRequest } from "@/interface/request";
 import { supabase } from "@/lib/supabase";
 
 export const createProject = async (DATA: CreateProjectRequest) => {
-  const { data: ProjectData, error } = await supabase
-    .from("projects")
-    .insert([{ ...DATA, id: getRandomUuid() }])
-    .select()
-    .maybeSingle();
+  const projectId = getRandomUuid();
+
+  const { error } = await supabase.rpc("create_static_website_project", {
+    p_project_id: projectId,
+    p_name: DATA.name,
+    p_description: DATA.description,
+    p_created_by: DATA.created_by,
+    p_type: DATA.type,
+    p_region: DATA.region,
+    p_workspace_id: DATA.workspace_id,
+    p_cloudfront_url: DATA.cloudfront_url,
+    p_distribution_id: DATA.distribution_id,
+    p_bucket_name: DATA.bucket_name,
+    p_environment: DATA.environment,
+    swp_id: getRandomUuid(),
+  });
 
   if (error) {
-    console.error(error);
+    console.error("Error:", error);
     throw new Error(error.message);
   }
 
-  return ProjectData;
+  return projectId;
 };
 
 export const updateProject = async () => {};
@@ -32,20 +43,18 @@ export const getProjects = async (WorkspaceId: string) => {
   return projects;
 };
 
-export const getSingleProject = async (
-  projectId: string
-  // workspaceId: string
-) => {
+export const getSingleProject = async (projectId: string) => {
   const { data: projects, error } = await supabase
     .from("projects")
-    .select("*, users ( username )")
+    .select("*, users ( username ), static_website_project ( * )")
     .eq("id", projectId)
-    // .eq("workspace_id", workspaceId)
     .maybeSingle();
 
   if (error) {
     console.error(error);
     throw new Error(error.message);
   }
-  return projects;
+  return {
+    ...projects,
+  };
 };

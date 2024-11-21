@@ -7,8 +7,17 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { useParams } from 'react-router-dom'
-import { Switch } from '@/components/ui/switch'
 import { FormPageContainer } from '@/components/shared/FormPageContainer'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { AWS_REGIONS } from '@/constants'
 
 export default function CreateStaticWebsite() {
   const { workspaceId } = useParams()
@@ -30,7 +39,8 @@ export default function CreateStaticWebsite() {
         message: 'Bucket name must be at most 63 characters.'
       }),
     multipleEnv: z.boolean().default(false),
-    region: z.string().default('ap-south-1')
+    region: z.string().default('ap-south-1'),
+    environment: z.enum(['staging', 'production']).optional().default('production')
   })
 
   //api hooks
@@ -53,7 +63,8 @@ export default function CreateStaticWebsite() {
       created_by: '123',
       workspace_id: workspaceId as string,
       bucket_name: values.bucket_name.trim(),
-      region: values.region
+      region: values.region,
+      environment: values.environment
     })
   }
   return (
@@ -115,19 +126,53 @@ export default function CreateStaticWebsite() {
 
           <FormField
             control={form.control}
-            name='multipleEnv'
+            name='region'
             render={({ field }) => (
-              <FormItem className='rounded-lg border p-4'>
-                <div className='flex flex-row items-start justify-between'>
-                  <FormLabel className='text-sm'>Use multiple environments</FormLabel>
-
+              <FormItem>
+                <FormLabel>Region</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={'ap-south-1'}>
                   <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a region' />
+                    </SelectTrigger>
                   </FormControl>
-                </div>
-                <FormDescription>
-                  This will create two S3 buckets for the same project, one for staging and one for production
-                </FormDescription>
+                  <SelectContent>
+                    {AWS_REGIONS.map((continent) => (
+                      <SelectGroup>
+                        <SelectLabel>{continent.continent}</SelectLabel>
+                        {continent.regions.map((region) => (
+                          <SelectItem className='' value={region.code}>
+                            {`${region.city} (${region.code})`}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>Select an AWS region by continent and city.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='environment'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Environment</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={'production'}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a environment' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='staging'>Staging</SelectItem>
+                    <SelectItem value='production'>Production</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
               </FormItem>
             )}
           />

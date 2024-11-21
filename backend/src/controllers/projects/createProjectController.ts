@@ -28,13 +28,14 @@ export const createProjectController = async (
         distribution_id: cloudFrontData.id,
         cloudfront_url: cloudFrontData.url,
         region: BODY.region,
+        environment: BODY.environment,
       };
 
       const data = await createProject(projectData);
 
       res.status(201).send(
         createResponse(true, "Project and bucket Created Successfully", {
-          projectId: data.id,
+          projectId: data,
         })
       );
     }

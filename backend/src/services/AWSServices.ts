@@ -1,5 +1,7 @@
 import { indexPageContent } from "@/constants/PageContent";
 import { getAWSCredentials } from "./workspaceServices";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { DistFileData } from "@/interface/request";
 import {
   S3Client,
   CreateBucketCommand,
@@ -10,17 +12,17 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   PutBucketCorsCommand,
-  PutBucketVersioningCommand,
-  BucketVersioningStatus,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
   CreateDistributionCommand,
   CreateDistributionCommandInput,
+  DistributionConfig,
+  GetDistributionCommand,
+  GetDistributionConfigCommand,
+  UpdateDistributionCommand,
   ViewerProtocolPolicy,
 } from "@aws-sdk/client-cloudfront";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { DistFileData } from "@/interface/request";
 
 interface AWSCredentials {
   accessKeyId: string;
@@ -266,11 +268,12 @@ export const createStaticWebsite = async (
 export const generatePresignedUrls = async (
   workspaceId: string,
   distFiles: DistFileData[],
-  bucketName: string
+  bucketName: string,
+  region: string
 ): Promise<{ url: string; path: string }[]> => {
   try {
     const credentials = await fetchAWSCredentials(workspaceId);
-    const s3Client = initializeS3Client(credentials);
+    const s3Client = initializeS3Client({ ...credentials, region });
     const presignedURLs = await Promise.all(
       distFiles.map(async (file) => {
         const command = new PutObjectCommand({
@@ -307,5 +310,95 @@ export const createSignedUrl = async (
     return signedUrl;
   } catch (error) {
     throw new Error("Failed to generate signed URL");
+  }
+};
+
+export const getCloudfrontStatus = async (
+  workspaceId: string,
+  distributionId: string,
+  region: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+
+    const cloudFrontClient = initializeCloudFrontClient({
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+      region,
+    });
+    const command = new GetDistributionCommand({ Id: distributionId });
+    const response = await cloudFrontClient.send(command);
+    return response?.Distribution?.Status;
+  } catch (error) {
+    console.error("Error fetching CloudFront status:", error);
+    throw error;
+  }
+};
+
+export const fetchCloudFrontSettings = async (
+  workspaceId: string,
+  distributionId: string,
+  region: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const cloudFrontClient = initializeCloudFrontClient({
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+      region,
+    });
+    const command = new GetDistributionConfigCommand({ Id: distributionId });
+    const response = await cloudFrontClient.send(command);
+    return response?.DistributionConfig;
+  } catch (error) {
+    console.error("Error fetching CloudFront settings:", error);
+    throw error;
+  }
+};
+
+export const updateCloudFrontSettings = async (
+  workspaceId: string,
+  distributionId: string,
+  region: string,
+  settings: DistributionConfig
+) => {
+  try {
+    // Step 1: Fetch credentials
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const cloudFrontClient = new CloudFrontClient({
+      credentials: {
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+      },
+      region,
+    });
+
+    // Step 2: Get the current configuration and ETag
+    const getConfigCommand = new GetDistributionConfigCommand({
+      Id: distributionId,
+    });
+    const getConfigResponse = await cloudFrontClient.send(getConfigCommand);
+
+    const { ETag, DistributionConfig } = getConfigResponse;
+
+    if (!ETag) {
+      throw new Error(
+        "Failed to retrieve the ETag for the distribution configuration."
+      );
+    }
+
+    // Step 3: Update the distribution configuration
+    const updateCommand = new UpdateDistributionCommand({
+      Id: distributionId,
+      IfMatch: ETag, // Use the ETag to ensure version consistency
+      DistributionConfig: settings,
+    });
+
+    const response = await cloudFrontClient.send(updateCommand);
+
+    return response?.Distribution;
+  } catch (error) {
+    console.error("Error updating CloudFront settings:", error);
+    throw error;
   }
 };

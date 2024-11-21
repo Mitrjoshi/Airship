@@ -15,4 +15,5 @@ export interface CreateProjectRequest {
   created_by: string
   workspace_id: string
   region: string
+  environment: 'staging' | 'production'
 }

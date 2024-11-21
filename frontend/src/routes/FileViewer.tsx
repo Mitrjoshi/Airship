@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/button'
 import { FolderIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon, FileTextIcon } from '@radix-ui/react-icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface FileNode {
   name: string
@@ -9,14 +10,13 @@ interface FileNode {
   nodes?: FileNode[]
 }
 
-export default function FolderViewer() {
-  const [fileStructure, setFileStructure] = useState<FileNode[]>([])
+interface I_Param {
+  selectedFile: File[]
+  upload: () => void
+}
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files || [])
-    const folderStructure = buildFolderStructure(selectedFiles)
-    setFileStructure(folderStructure)
-  }
+export default function FolderViewer({ selectedFile, upload }: I_Param) {
+  const [fileStructure, setFileStructure] = useState<FileNode[]>([])
 
   const buildFolderStructure = (files: File[]): FileNode[] => {
     const root: FileNode[] = []
@@ -47,14 +47,24 @@ export default function FolderViewer() {
     return root
   }
 
+  useEffect(() => {
+    if (!selectedFile) return
+
+    const selectedFiles = Array.from(selectedFile || [])
+    const folderStructure = buildFolderStructure(selectedFiles)
+    setFileStructure(folderStructure)
+  }, [selectedFile])
+
   return (
-    <div>
-      <input type='file' {...{ webkitdirectory: 'true', directory: 'true' }} onChange={handleFileSelect} />
-      <ul className='mx-auto max-w-3xl p-8'>
+    <div className='mx-auto max-w-3xl p-8'>
+      <ul>
         {fileStructure.map((folder, index) => (
           <Folder key={index} folder={folder} />
         ))}
       </ul>
+      <Button onClick={upload} size={'sm'} className='w-full'>
+        Upload
+      </Button>
     </div>
   )
 }
@@ -68,7 +78,7 @@ function Folder({ folder }: { folder: FileNode }) {
         <div className='flex items-center gap-1.5'>
           {folder.nodes && folder.nodes.length > 0 && (
             <button onClick={() => setIsOpen(!isOpen)}>
-              <ChevronDownIcon className={`size-4 text-gray-500 ${isOpen ? 'rotate-90' : ''}`} />
+              <ChevronDownIcon className={`size-4 text-gray-500 ${!isOpen ? '-rotate-90' : ''}`} />
             </button>
           )}
 

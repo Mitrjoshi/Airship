@@ -2,6 +2,7 @@ import { ServerRoutes } from '@/constants'
 import { ApiResponse, PresignedUrlResponse } from '@/types/response'
 import apiClient from '@/utils/apiClient'
 import { useMutation } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 interface DistFiles {
   path: string
@@ -12,6 +13,7 @@ interface GetPresignedURLRequest {
   bucketName: string
   workspaceId: string
   distFiles: DistFiles[]
+  region: string
 }
 
 const getPresignedURLs = async (data: GetPresignedURLRequest): Promise<ApiResponse<PresignedUrlResponse[]>> => {
@@ -22,7 +24,8 @@ const getPresignedURLs = async (data: GetPresignedURLRequest): Promise<ApiRespon
 export const useGetPresignedURLs = () => {
   return useMutation({
     mutationFn: getPresignedURLs,
-    onError: (error: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: AxiosError<ApiResponse>) => {
       console.error(error.response?.data?.message || error.message)
     }
   })

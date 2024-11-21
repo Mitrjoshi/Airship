@@ -1,32 +1,41 @@
 import { DistFileData } from "@/interface/request";
-import { createSignedUrl, generatePresignedUrls } from "@/services/AWSServices";
+import {
+  createSignedUrl,
+  generatePresignedUrls,
+  updateCloudFrontSettings,
+} from "@/services/AWSServices";
 import { createResponse } from "@/utils/createResponse";
+import { DistributionConfig } from "@aws-sdk/client-cloudfront";
 import { Request, Response } from "express";
 
 interface GetPresignedUrlsRequest {
-  bucketName: string;
   workspaceId: string;
-  distFiles: DistFileData[];
+  distributionId: string;
   region: string;
+  settings: DistributionConfig;
 }
 
-export const getPresignedUrlsController = async (
+export const updateProjectController = async (
   req: Request<{}, {}, GetPresignedUrlsRequest>,
   res: Response
 ): Promise<void> => {
-  const { workspaceId, bucketName, distFiles, region } = req.body;
+  const { workspaceId, distributionId, region, settings } = req.body;
 
   try {
-    const presignedURLs = await generatePresignedUrls(
+    const updateData = await updateCloudFrontSettings(
       workspaceId,
-      distFiles,
-      bucketName,
-      region
+      distributionId,
+      region,
+      settings
     );
     res
       .status(200)
       .send(
-        createResponse(true, "Signed Url created successfully.", presignedURLs)
+        createResponse(
+          true,
+          "Cloudfront config updated successfully.",
+          updateData
+        )
       );
   } catch (error) {
     res.status(500).send(
