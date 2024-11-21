@@ -4,8 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { formatDate } from '@/utils/utils'
 import PageContainer from '@/components/shared/PageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
-import { CommitIcon, PersonIcon, PlusIcon } from '@radix-ui/react-icons'
-import { MergeIcon } from 'lucide-react'
+import { PersonIcon, PlusIcon } from '@radix-ui/react-icons'
 
 export default function WorkspaceList() {
   const { data: workspaces } = useGetWorkspaces()

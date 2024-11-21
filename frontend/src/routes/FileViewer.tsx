@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { FolderIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon, FileTextIcon } from '@radix-ui/react-icons'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface FileNode {
   name: string
