@@ -2,7 +2,7 @@ import { FileNode } from '@/types'
 
 export function getProcessedFiles(selectedFiles: File[]): File[] {
   const processedFiles = selectedFiles.map((file) => {
-    let originalPath = file.webkitRelativePath || file.relativePath || file.path || ''
+    let originalPath = file.relativePath || file.path || ''
 
     if (originalPath?.startsWith('/')) {
       originalPath = originalPath.slice(1)
@@ -27,6 +27,12 @@ export function getProcessedFiles(selectedFiles: File[]): File[] {
       writable: true
     })
 
+    // Manually set the `relativePath` field
+    Object.defineProperty(updatedFile, 'relativePath', {
+      value: file.relativePath,
+      writable: true
+    })
+
     return updatedFile
   })
   return processedFiles
@@ -38,7 +44,7 @@ export function buildFolderStructure(files: File[]): FileNode[] {
   console.log('Files:', files)
 
   files?.forEach((file) => {
-    let originalPath: string = file.webkitRelativePath || file.relativePath || file.path || ''
+    let originalPath: string = file.relativePath || file.path || ''
     if (originalPath?.startsWith('/')) {
       originalPath = originalPath?.slice(1)
     }
@@ -63,6 +69,8 @@ export function buildFolderStructure(files: File[]): FileNode[] {
       }
     })
   })
+
+  console.log('Root:', root)
 
   return root
 }
