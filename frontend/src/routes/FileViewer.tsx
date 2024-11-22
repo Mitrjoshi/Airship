@@ -1,70 +1,31 @@
 import { Button } from '@/components/ui/button'
+import { FileNode } from '@/types'
 import { FolderIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon, FileTextIcon } from '@radix-ui/react-icons'
-import { useEffect, useState } from 'react'
-
-interface FileNode {
-  name: string
-  size?: number
-  count?: number
-  nodes?: FileNode[]
-}
+import { useState } from 'react'
 
 interface I_Param {
-  selectedFile: File[]
-  upload: () => void
+  fileStructure: FileNode[]
+  onUpload: () => void
 }
 
-export default function FolderViewer({ selectedFile, upload }: I_Param) {
-  const [fileStructure, setFileStructure] = useState<FileNode[]>([])
-
-  const buildFolderStructure = (files: File[]): FileNode[] => {
-    const root: FileNode[] = []
-
-    files.forEach((file) => {
-      const pathParts = file.webkitRelativePath.split('/')
-      let currentNode = root
-
-      pathParts.forEach((part, index) => {
-        const isFile = index === pathParts.length - 1
-        const node: FileNode = { name: part }
-
-        if (isFile) {
-          node.size = file.size
-          currentNode.push(node)
-        } else {
-          let folderNode = currentNode.find((n) => n.name === part)
-          if (!folderNode) {
-            folderNode = { name: part, nodes: [], count: 0 }
-            currentNode.push(folderNode)
-          }
-          folderNode.count = (folderNode.count || 0) + 1
-          currentNode = folderNode.nodes!
-        }
-      })
-    })
-
-    return root
-  }
-
-  useEffect(() => {
-    if (!selectedFile) return
-
-    const selectedFiles = Array.from(selectedFile || [])
-    const folderStructure = buildFolderStructure(selectedFiles)
-    setFileStructure(folderStructure)
-  }, [selectedFile])
-
+export default function FolderViewer({ fileStructure, onUpload }: I_Param) {
   return (
-    <div className='mx-auto max-w-3xl p-8'>
-      <ul>
+    <div>
+      <ul className='mb-6 rounded-lg border p-6 shadow-sm'>
         {fileStructure.map((folder, index) => (
           <Folder key={index} folder={folder} />
         ))}
       </ul>
-      <Button onClick={upload} size={'sm'} className='w-full'>
-        Upload
-      </Button>
+
+      <div className='flex items-center justify-end gap-4'>
+        <Button variant='outline' size='sm'>
+          Cancel
+        </Button>
+        <Button onClick={onUpload} size='sm'>
+          Upload
+        </Button>
+      </div>
     </div>
   )
 }

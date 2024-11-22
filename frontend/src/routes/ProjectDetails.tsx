@@ -18,7 +18,7 @@ export default function ProjectDetails() {
           refetchProject()
         }}
         refreshing={isRefetchingProject}
-        status={projectData?.data?.status as unknown as checkStatusResponse}
+        status={projectData?.data?.status as checkStatusResponse}
         projectData={projectData?.data}
       />
     </div>
@@ -69,7 +69,7 @@ function OverviewCard({ projectData, status, onRefresh, refreshing }: OverviewCa
                 {status === 'Deployed' && (
                   <>
                     <span className='h-2.5 w-2.5 rounded-full bg-green-500'></span>
-                    <span>Active</span>
+                    <span>Ready</span>
                   </>
                 )}
               </p>

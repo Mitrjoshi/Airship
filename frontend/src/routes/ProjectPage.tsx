@@ -37,7 +37,7 @@ export default function ProjectPage() {
         }
       />
 
-      <Outlet context={{ projectId, projectData }} />
+      <Outlet />
     </PageContainer>
   )
 }

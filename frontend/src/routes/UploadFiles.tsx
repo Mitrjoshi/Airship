@@ -5,40 +5,12 @@ import axios from 'axios'
 import { useCallback, useMemo, useState } from 'react'
 import FolderViewer from './FileViewer'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
+import { buildFolderStructure } from '@/utils/fileUtils'
 
 // interface FileWithMetadata {
 //   file: File
 //   path: string // Path relative to the folder
 // }
-
-const baseStyle = {
-  flex: 1,
-  display: 'flex',
-  alignItems: 'center',
-  padding: '20px',
-  borderWidth: 2,
-  borderRadius: 6,
-  borderColor: '--border',
-  borderStyle: 'dashed',
-  backgroundColor: '--background',
-  color: '#bdbdbd',
-  outline: 'none',
-  transition: 'border .24s ease-in-out',
-  height: 200,
-  justifyContent: 'center'
-}
-
-const focusedStyle = {
-  borderColor: '#2196f3'
-}
-
-const acceptStyle = {
-  borderColor: '#00e676'
-}
-
-const rejectStyle = {
-  borderColor: '#ff1744'
-}
 
 export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
@@ -62,8 +34,7 @@ export default function UploadFile() {
           const urls = data.data
           await Promise.all(
             files.map(async (fileWithMeta) => {
-              const { webkitRelativePath } = fileWithMeta
-              const urlObj = urls.find((urlObj: { path: string }) => urlObj.path === webkitRelativePath)
+              const urlObj = urls.find((urlObj: { path: string }) => urlObj.path === fileWithMeta.webkitRelativePath)
 
               if (urlObj) {
                 await axios.put(urlObj.url, fileWithMeta, {
@@ -72,13 +43,57 @@ export default function UploadFile() {
               }
             })
           )
-
+        },
+        onSettled: () => {
           setFiles([])
         }
       }
     )
   }
 
+  return (
+    <>
+      {files && files.length > 0 ? (
+        <FolderViewer onUpload={uploadFiles} fileStructure={buildFolderStructure(files)} />
+      ) : (
+        <DragAndDrop setFiles={setFiles} />
+      )}
+    </>
+  )
+}
+
+interface DragAndDropProps {
+  setFiles: (files: File[]) => void
+}
+function DragAndDrop({ setFiles }: DragAndDropProps) {
+  const baseStyle = {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '20px',
+    borderWidth: 2,
+    borderRadius: 6,
+    borderColor: '--border',
+    borderStyle: 'dashed',
+    backgroundColor: '--background',
+    color: '#bdbdbd',
+    outline: 'none',
+    transition: 'border .24s ease-in-out',
+    height: 200,
+    justifyContent: 'center'
+  }
+
+  const focusedStyle = {
+    borderColor: '#2196f3'
+  }
+
+  const acceptStyle = {
+    borderColor: '#00e676'
+  }
+
+  const rejectStyle = {
+    borderColor: '#ff1744'
+  }
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles)
   }, [])
@@ -99,23 +114,10 @@ export default function UploadFile() {
     }),
     [isFocused, isDragAccept, isDragReject]
   )
-
   return (
-    <>
-      {files && files.length > 0 ? (
-        <>
-          <FolderViewer upload={uploadFiles} selectedFile={files} />
-        </>
-      ) : (
-        <div {...getRootProps({ style })}>
-          <input id='folder' {...{ webkitdirectory: 'true', directory: 'true' }} {...getInputProps()} />
-          {isDragActive ? (
-            <p>Drop the files here ...</p>
-          ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
-          )}
-        </div>
-      )}
-    </>
+    <div {...getRootProps({ style })}>
+      <input id='folder' {...{ webkitdirectory: 'true', directory: 'true' }} {...getInputProps()} />
+      {isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
+    </div>
   )
 }
