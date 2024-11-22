@@ -5,6 +5,7 @@ import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { SettingsIcon } from 'lucide-react'
 import { PlusIcon, UpdateIcon } from '@radix-ui/react-icons'
+import LoadingBtn from '@/components/shared/LoadingBtn'
 
 export default function ProjectPage() {
   const { projectId } = useParams()
@@ -23,10 +24,16 @@ export default function ProjectPage() {
         showBackBtn
         element={
           <div className='flex items-center gap-2'>
-            <Button onClick={() => refetchProjectData()} variant='outline' size='sm'>
-              <UpdateIcon className={`h-4 w-4 ${isProjectDataLoading ? 'animate-spin' : ''}`} />
-              Instant rollback
-            </Button>
+            <LoadingBtn
+              disabled={isProjectDataLoading}
+              isLoading={isProjectDataLoading}
+              onClick={() => refetchProjectData()}
+              variant='outline'
+              size='sm'
+            >
+              <UpdateIcon className='h-4 w-4' />
+              Refresh
+            </LoadingBtn>
 
             <Button onClick={() => navigate('config')} variant='outline' size='sm'>
               <SettingsIcon className='h-4 w-4' />

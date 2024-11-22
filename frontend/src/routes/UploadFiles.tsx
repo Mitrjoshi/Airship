@@ -11,7 +11,7 @@ export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
   const { data: projectData } = useGetSingleProject(projectId as string)
 
-  const { mutate: mutatePresignedURLs } = useGetPresignedURLs()
+  const { mutate: mutatePresignedURLs, isPending: isUploading } = useGetPresignedURLs()
 
   const [files, setFiles] = useState<File[]>([])
 
@@ -56,7 +56,12 @@ export default function UploadFile() {
   return (
     <>
       {files && files.length > 0 ? (
-        <FolderViewer onUpload={uploadFiles} fileStructure={buildFolderStructure(files)} onCancel={cancelUpload} />
+        <FolderViewer
+          isUploading={isUploading}
+          onUpload={uploadFiles}
+          fileStructure={buildFolderStructure(files)}
+          onCancel={cancelUpload}
+        />
       ) : (
         <DragAndDrop setFiles={setFiles} />
       )}

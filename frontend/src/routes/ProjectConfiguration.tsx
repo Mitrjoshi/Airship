@@ -1,3 +1,4 @@
+import LoadingBtn from '@/components/shared/LoadingBtn'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
@@ -11,7 +12,7 @@ export const ProjectConfiguration = () => {
 
   //api hooks
   const { data: projectData } = useGetSingleProject(projectId as string)
-  const { mutate: updateProjectMutate } = useUpdateProject()
+  const { mutate: updateProjectMutate, isPending: isUpdatingProject } = useUpdateProject()
 
   //state
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -29,7 +30,10 @@ export const ProjectConfiguration = () => {
       text: 'Invalidations'
     },
     {
-      text: 'Caching Behaviors'
+      text: 'Caching behaviors'
+    },
+    {
+      text: 'Instant rollback'
     }
   ]
 
@@ -81,7 +85,9 @@ export const ProjectConfiguration = () => {
               </div>
 
               <div className='flex w-full justify-end'>
-                <Button
+                <LoadingBtn
+                  isLoading={isUpdatingProject}
+                  disabled={isUpdatingProject}
                   onClick={() => {
                     updateProjectMutate({
                       distributionId: projectData?.data?.distribution_id as string,
@@ -93,7 +99,7 @@ export const ProjectConfiguration = () => {
                   size={'sm'}
                 >
                   Save
-                </Button>
+                </LoadingBtn>
               </div>
             </>
           )}

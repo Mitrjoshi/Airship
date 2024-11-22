@@ -18,6 +18,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { AWS_REGIONS } from '@/constants'
+import LoadingBtn from '@/components/shared/LoadingBtn'
 
 export default function CreateStaticWebsite() {
   const { workspaceId } = useParams()
@@ -44,7 +45,7 @@ export default function CreateStaticWebsite() {
   })
 
   //api hooks
-  const { mutate } = useCreateProject()
+  const { mutate, isPending } = useCreateProject()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,6 +68,9 @@ export default function CreateStaticWebsite() {
       environment: values.environment
     })
   }
+
+  const { isValid } = form.formState
+
   return (
     <FormPageContainer>
       <TitleHeader title='Create Static Website' showBackBtn />
@@ -177,9 +181,9 @@ export default function CreateStaticWebsite() {
             )}
           />
 
-          <Button className='w-full' type='submit'>
+          <LoadingBtn disabled={!isValid || isPending} isLoading={isPending} className='w-full' type='submit'>
             Create Now
-          </Button>
+          </LoadingBtn>
         </form>
       </Form>
     </FormPageContainer>

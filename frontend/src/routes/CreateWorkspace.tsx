@@ -1,4 +1,5 @@
 import { FormPageContainer } from '@/components/shared/FormPageContainer'
+import LoadingBtn from '@/components/shared/LoadingBtn'
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -36,7 +37,7 @@ const CreateWorkspace = () => {
       })
   })
 
-  const { mutate } = useCreateWorkspace()
+  const { mutate, isPending } = useCreateWorkspace()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -140,9 +141,9 @@ const CreateWorkspace = () => {
             )}
           />
 
-          <Button className='w-full' type='submit' disabled={!isValid}>
+          <LoadingBtn className='w-full' type='submit' disabled={!isValid || isPending} isLoading={isPending}>
             Create Workspace
-          </Button>
+          </LoadingBtn>
         </form>
       </Form>
     </FormPageContainer>
