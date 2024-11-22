@@ -5,12 +5,7 @@ import axios from 'axios'
 import { useCallback, useMemo, useState } from 'react'
 import FolderViewer from './FileViewer'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
-import { buildFolderStructure } from '@/utils/fileUtils'
-
-// interface FileWithMetadata {
-//   file: File
-//   path: string // Path relative to the folder
-// }
+import { buildFolderStructure, getProcessedFiles } from '@/utils/fileUtils'
 
 export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
@@ -25,15 +20,18 @@ export default function UploadFile() {
       {
         workspaceId: workspaceId!,
         bucketName: projectData?.data?.bucket_name as string,
-        distFiles: files.map((f) => ({ path: f.webkitRelativePath, type: f.type })),
+        distFiles: files.map((file) => ({ path: file.webkitRelativePath, type: file.type })),
         region: projectData?.data?.region as string
       },
       {
         onSuccess: async (data) => {
           if (!data?.data) return
           const urls = data.data
+
           await Promise.all(
             files.map(async (fileWithMeta) => {
+              console.log(fileWithMeta)
+
               const urlObj = urls.find((urlObj: { path: string }) => urlObj.path === fileWithMeta.webkitRelativePath)
 
               if (urlObj) {
@@ -95,7 +93,10 @@ function DragAndDrop({ setFiles }: DragAndDropProps) {
     borderColor: '#ff1744'
   }
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(acceptedFiles)
+    const newFiles = getProcessedFiles(acceptedFiles)
+    console.log(newFiles)
+
+    setFiles(newFiles)
   }, [])
 
   const { getRootProps, getInputProps, isDragActive, isFocused, isDragAccept, isDragReject } = useDropzone({
