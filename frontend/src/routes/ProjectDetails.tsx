@@ -1,26 +1,15 @@
-import { Button } from '@/components/ui/button'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { checkStatusResponse, getProjectsResponse } from '@/types/response'
 import { formatDate } from '@/utils/utils'
-import { UpdateIcon } from '@radix-ui/react-icons'
 import { useParams } from 'react-router-dom'
 
 export default function ProjectDetails() {
   const { projectId } = useParams()
   const { data: projectData } = useGetSingleProject(projectId as string)
 
-  const { refetch: refetchProject, isRefetching: isRefetchingProject } = useGetSingleProject(projectId as string)
-
   return (
     <div>
-      <OverviewCard
-        onRefresh={() => {
-          refetchProject()
-        }}
-        refreshing={isRefetchingProject}
-        status={projectData?.data?.status as checkStatusResponse}
-        projectData={projectData?.data}
-      />
+      <OverviewCard status={projectData?.data?.status as checkStatusResponse} projectData={projectData?.data} />
     </div>
   )
 }
@@ -28,11 +17,9 @@ export default function ProjectDetails() {
 interface OverviewCardProps {
   projectData: getProjectsResponse | undefined
   status: checkStatusResponse
-  onRefresh: () => void
-  refreshing: boolean
 }
 
-function OverviewCard({ projectData, status, onRefresh, refreshing }: OverviewCardProps) {
+function OverviewCard({ projectData, status }: OverviewCardProps) {
   return (
     projectData && (
       <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
@@ -87,16 +74,6 @@ function OverviewCard({ projectData, status, onRefresh, refreshing }: OverviewCa
             <p>Initial deployment</p>
           </li>
         </ul>
-
-        <Button
-          disabled={refreshing}
-          onClick={onRefresh}
-          className='absolute right-6 top-6'
-          variant='outline'
-          size='icon'
-        >
-          <UpdateIcon className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-        </Button>
       </div>
     )
   )

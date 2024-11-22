@@ -3,14 +3,18 @@ import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import { RotateCcw, SettingsIcon } from 'lucide-react'
-import { PlusIcon } from '@radix-ui/react-icons'
+import { SettingsIcon } from 'lucide-react'
+import { PlusIcon, UpdateIcon } from '@radix-ui/react-icons'
 
 export default function ProjectPage() {
   const { projectId } = useParams()
   const navigate = useNavigate()
 
-  const { data: projectData } = useGetSingleProject(projectId as string)
+  const {
+    data: projectData,
+    refetch: refetchProjectData,
+    isRefetching: isProjectDataLoading
+  } = useGetSingleProject(projectId as string)
 
   return (
     <PageContainer>
@@ -19,8 +23,8 @@ export default function ProjectPage() {
         showBackBtn
         element={
           <div className='flex items-center gap-2'>
-            <Button variant='outline' size='sm'>
-              <RotateCcw className='h-4 w-4' />
+            <Button onClick={() => refetchProjectData()} variant='outline' size='sm'>
+              <UpdateIcon className={`h-4 w-4 ${isProjectDataLoading ? 'animate-spin' : ''}`} />
               Instant rollback
             </Button>
 
