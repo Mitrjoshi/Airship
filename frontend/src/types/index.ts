@@ -4,3 +4,8 @@ export interface FileNode {
   count?: number
   nodes?: FileNode[]
 }
+
+export interface CustomFile extends File {
+  relativePath?: string
+  path?: string
+}

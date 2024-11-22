@@ -1,7 +1,7 @@
-import { FileNode } from '@/types'
+import { CustomFile, FileNode } from '@/types'
 
-export function getProcessedFiles(selectedFiles: File[]): File[] {
-  const processedFiles = selectedFiles.map((file) => {
+export function getProcessedFiles(selectedFiles: CustomFile[]): File[] {
+  return selectedFiles.map((file) => {
     let originalPath = file.relativePath || file.path || ''
 
     if (originalPath?.startsWith('/')) {
@@ -35,23 +35,20 @@ export function getProcessedFiles(selectedFiles: File[]): File[] {
 
     return updatedFile
   })
-  return processedFiles
 }
 
-export function buildFolderStructure(files: File[]): FileNode[] {
+export function buildFolderStructure(files: CustomFile[]): FileNode[] {
   const root: FileNode[] = []
 
-  console.log('Files:', files)
-
-  files?.forEach((file) => {
+  files.forEach((file) => {
     let originalPath: string = file.relativePath || file.path || ''
-    if (originalPath?.startsWith('/')) {
-      originalPath = originalPath?.slice(1)
+    if (originalPath.startsWith('/')) {
+      originalPath = originalPath.slice(1)
     }
-    const pathParts = originalPath?.split('/')
+    const pathParts = originalPath.split('/')
     let currentNode = root
 
-    pathParts?.forEach((part, index) => {
+    pathParts.forEach((part, index) => {
       const isFile = index === pathParts.length - 1
       const node: FileNode = { name: part }
 
@@ -59,7 +56,7 @@ export function buildFolderStructure(files: File[]): FileNode[] {
         node.size = file.size
         currentNode.push(node)
       } else {
-        let folderNode = currentNode?.find((n) => n.name === part)
+        let folderNode = currentNode.find((n) => n.name === part)
         if (!folderNode) {
           folderNode = { name: part, nodes: [], count: 0 }
           currentNode.push(folderNode)
@@ -69,8 +66,6 @@ export function buildFolderStructure(files: File[]): FileNode[] {
       }
     })
   })
-
-  console.log('Root:', root)
 
   return root
 }

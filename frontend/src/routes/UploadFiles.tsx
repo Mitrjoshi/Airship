@@ -49,10 +49,14 @@ export default function UploadFile() {
     )
   }
 
+  const cancelUpload = () => {
+    setFiles([])
+  }
+
   return (
     <>
       {files && files.length > 0 ? (
-        <FolderViewer onUpload={uploadFiles} fileStructure={buildFolderStructure(files)} />
+        <FolderViewer onUpload={uploadFiles} fileStructure={buildFolderStructure(files)} onCancel={cancelUpload} />
       ) : (
         <DragAndDrop setFiles={setFiles} />
       )}
@@ -94,8 +98,6 @@ function DragAndDrop({ setFiles }: DragAndDropProps) {
   }
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = getProcessedFiles(acceptedFiles)
-    console.log(newFiles)
-
     setFiles(newFiles)
   }, [])
 
