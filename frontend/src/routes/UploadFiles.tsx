@@ -1,11 +1,12 @@
 import { useGetPresignedURLs } from '@/services/useGetSignedURL'
 import { useParams } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
-import axios from 'axios'
+import axios, { AxiosProgressEvent } from 'axios'
 import { useCallback, useMemo, useState } from 'react'
 import FolderViewer from './FileViewer'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { buildFolderStructure, getProcessedFiles } from '@/utils/fileUtils'
+import { CustomFile } from '@/types'
 
 export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
@@ -13,7 +14,10 @@ export default function UploadFile() {
 
   const { mutate: mutatePresignedURLs, isPending: isUploading } = useGetPresignedURLs()
 
-  const [files, setFiles] = useState<File[]>([])
+  const [files, setFiles] = useState<CustomFile[]>([])
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
+
+  console.log('Progress', uploadProgress)
 
   const uploadFiles = () => {
     mutatePresignedURLs(
@@ -36,32 +40,45 @@ export default function UploadFile() {
 
               if (urlObj) {
                 await axios.put(urlObj.url, fileWithMeta, {
-                  headers: { 'Content-Type': fileWithMeta.type }
+                  headers: { 'Content-Type': fileWithMeta.type },
+                  onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+                    if (progressEvent.total) {
+                      const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                      setUploadProgress((prev) => ({ ...prev, [fileWithMeta.name]: progress }))
+                    }
+                  }
                 })
               }
             })
           )
-        },
-        onSettled: () => {
           setFiles([])
+          setUploadProgress({})
         }
       }
     )
   }
 
-  const cancelUpload = () => {
-    setFiles([])
-  }
-
   return (
     <>
       {files && files.length > 0 ? (
-        <FolderViewer
-          isUploading={isUploading}
-          onUpload={uploadFiles}
-          fileStructure={buildFolderStructure(files)}
-          onCancel={cancelUpload}
-        />
+        <>
+          <FolderViewer
+            isUploading={isUploading}
+            onUpload={uploadFiles}
+            fileStructure={buildFolderStructure(files)}
+            onCancel={() => setFiles([])}
+          />
+          <div className='mt-10 border border-red-500 p-6'>
+            {files.map((file) => (
+              <div className='flex items-center justify-between' key={file.name}>
+                <span>{file.name}</span>
+                <progress value={uploadProgress[file.name] || 0} max='100'>
+                  {uploadProgress[file.name] || 0}%
+                </progress>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <DragAndDrop setFiles={setFiles} />
       )}
