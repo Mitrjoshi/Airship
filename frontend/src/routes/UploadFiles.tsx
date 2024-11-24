@@ -12,9 +12,10 @@ export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
   const { data: projectData } = useGetSingleProject(projectId as string)
 
-  const { mutate: mutatePresignedURLs, isPending: isUploading } = useGetPresignedURLs()
+  const { mutate: mutatePresignedURLs, isPending: isGeneratingPresignedURLs } = useGetPresignedURLs()
 
   const [files, setFiles] = useState<CustomFile[]>([])
+  const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
 
   const uploadFiles = () => {
@@ -29,7 +30,7 @@ export default function UploadFile() {
         onSuccess: async (data) => {
           if (!data?.data) return
           const urls = data.data
-
+          setIsUploading(true)
           await Promise.all(
             files.map(async (fileWithMeta) => {
               console.log(fileWithMeta)
@@ -50,6 +51,7 @@ export default function UploadFile() {
             })
           )
           setFiles([])
+          setIsUploading(false)
           setUploadProgress({})
         }
       }
@@ -61,21 +63,23 @@ export default function UploadFile() {
       {files && files.length > 0 ? (
         <>
           <FolderViewer
-            isUploading={isUploading}
+            isGeneratingPresignedURLs={isGeneratingPresignedURLs}
             onUpload={uploadFiles}
             fileStructure={buildFolderStructure(files)}
             onCancel={() => setFiles([])}
           />
-          <div className='mt-10 border border-red-500 p-6'>
-            {files.map((file) => (
-              <div className='flex items-center justify-between' key={file.name}>
-                <span>{file.name}</span>
-                <progress value={uploadProgress[file.name] || 0} max='100'>
-                  {uploadProgress[file.name] || 0}%
-                </progress>
-              </div>
-            ))}
-          </div>
+          {isUploading && (
+            <div className='mt-10 border border-red-500 p-6'>
+              {files.map((file) => (
+                <div className='flex items-center justify-between' key={file.name}>
+                  <span>{file.name}</span>
+                  <progress value={uploadProgress[file.name] || 0} max='100'>
+                    {uploadProgress[file.name] || 0}%
+                  </progress>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       ) : (
         <DragAndDrop setFiles={setFiles} />
