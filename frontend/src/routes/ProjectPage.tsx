@@ -3,8 +3,9 @@ import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import { Loader, SettingsIcon } from 'lucide-react'
+import { SettingsIcon } from 'lucide-react'
 import { PlusIcon, UpdateIcon } from '@radix-ui/react-icons'
+import LoadingButton from '@/components/shared/LoadingButton'
 
 export default function ProjectPage() {
   const { projectId } = useParams()
@@ -23,24 +24,15 @@ export default function ProjectPage() {
         showBackBtn
         element={
           <div className='flex items-center gap-2'>
-            <Button
-              className='relative'
-              disabled={isProjectDataLoading}
-              onClick={() => refetchProjectData()}
+            <LoadingButton
               variant='outline'
               size='sm'
+              onClick={() => refetchProjectData()}
+              isLoading={isProjectDataLoading}
             >
-              {isProjectDataLoading && (
-                <span className='absolute inset-0 flex items-center justify-center'>
-                  <Loader className='h-4 w-4 animate-spin' />
-                </span>
-              )}
-
-              <span className={`flex items-center gap-2 ${isProjectDataLoading ? 'invisible' : ''}`}>
-                <UpdateIcon className='h-4 w-4' />
-                Refresh
-              </span>
-            </Button>
+              <UpdateIcon className='h-4 w-4' />
+              Refresh
+            </LoadingButton>
 
             <Button onClick={() => navigate('config')} variant='outline' size='sm'>
               <SettingsIcon className='h-4 w-4' />

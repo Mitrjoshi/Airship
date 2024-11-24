@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Button } from '@/components/ui/button'
 import { useParams } from 'react-router-dom'
 import { FormPageContainer } from '@/components/shared/FormPageContainer'
 import {
@@ -18,7 +17,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { AWS_REGIONS } from '@/constants'
-import LoadingBtn from '@/components/shared/LoadingBtn'
+import LoadingButton from '@/components/shared/LoadingButton'
 
 export default function CreateStaticWebsite() {
   const { workspaceId } = useParams()
@@ -181,9 +180,9 @@ export default function CreateStaticWebsite() {
             )}
           />
 
-          <LoadingBtn disabled={!isValid || isPending} isLoading={isPending} className='w-full' type='submit'>
+          <LoadingButton disabled={!isValid} isLoading={isPending} className='w-full' type='submit'>
             Create Now
-          </LoadingBtn>
+          </LoadingButton>
         </form>
       </Form>
     </FormPageContainer>

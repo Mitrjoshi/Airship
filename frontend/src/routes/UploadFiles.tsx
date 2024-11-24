@@ -17,8 +17,6 @@ export default function UploadFile() {
   const [files, setFiles] = useState<CustomFile[]>([])
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
 
-  console.log('Progress', uploadProgress)
-
   const uploadFiles = () => {
     mutatePresignedURLs(
       {

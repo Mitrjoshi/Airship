@@ -1,4 +1,4 @@
-import LoadingBtn from '@/components/shared/LoadingBtn'
+import LoadingButton from '@/components/shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { FileNode } from '@/types'
 import { FolderIcon } from '@heroicons/react/24/solid'
@@ -9,7 +9,7 @@ interface I_Param {
   fileStructure: FileNode[]
   onUpload: () => void
   onCancel: () => void
-  isUploading?: boolean
+  isUploading: boolean
 }
 
 export default function FolderViewer({ fileStructure, onUpload, onCancel, isUploading }: I_Param) {
@@ -25,9 +25,9 @@ export default function FolderViewer({ fileStructure, onUpload, onCancel, isUplo
         <Button onClick={onCancel} variant='outline' size='sm'>
           Cancel
         </Button>
-        <LoadingBtn isLoading={isUploading} disabled={isUploading} onClick={onUpload} size='sm'>
+        <LoadingButton isLoading={isUploading} disabled={isUploading} onClick={onUpload} size='sm'>
           Upload
-        </LoadingBtn>
+        </LoadingButton>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import LoadingBtn from '@/components/shared/LoadingBtn'
+import LoadingButton from '@/components/shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
@@ -85,7 +85,7 @@ export const ProjectConfiguration = () => {
               </div>
 
               <div className='flex w-full justify-end'>
-                <LoadingBtn
+                <LoadingButton
                   isLoading={isUpdatingProject}
                   disabled={isUpdatingProject}
                   onClick={() => {
@@ -99,7 +99,7 @@ export const ProjectConfiguration = () => {
                   size={'sm'}
                 >
                   Save
-                </LoadingBtn>
+                </LoadingButton>
               </div>
             </>
           )}

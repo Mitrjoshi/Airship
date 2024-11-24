@@ -1,7 +1,6 @@
 import { FormPageContainer } from '@/components/shared/FormPageContainer'
-import LoadingBtn from '@/components/shared/LoadingBtn'
+import LoadingButton from '@/components/shared/LoadingButton'
 import TitleHeader from '@/components/shared/TitleHeader'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -141,9 +140,9 @@ const CreateWorkspace = () => {
             )}
           />
 
-          <LoadingBtn className='w-full' type='submit' disabled={!isValid || isPending} isLoading={isPending}>
+          <LoadingButton className='w-full' type='submit' disabled={!isValid} isLoading={isPending}>
             Create Workspace
-          </LoadingBtn>
+          </LoadingButton>
         </form>
       </Form>
     </FormPageContainer>
