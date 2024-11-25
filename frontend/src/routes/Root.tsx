@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@/components/themes/ThemeProvider'
 import { Outlet } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from '@/components/ui/toaster'
 import NavBar from '@/components/shared/NavBar'
+import { Toaster } from 'sonner'
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 export default function Root() {
   return (
@@ -12,8 +12,8 @@ export default function Root() {
       <QueryClientProvider client={queryClient}>
         <NavBar />
         <Outlet />
-        <Toaster />
       </QueryClientProvider>
+      <Toaster position='top-right' richColors theme='light' toastOptions={{ duration: 2500 }} />
     </ThemeProvider>
   )
 }

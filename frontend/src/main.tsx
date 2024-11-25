@@ -12,6 +12,7 @@ import { Button } from './components/ui/button'
 import UploadFiles from './routes/UploadFiles'
 import ProjectDetails from './routes/ProjectDetails'
 import { ProjectConfiguration } from './routes/ProjectConfiguration'
+import { ProjectSource } from './routes/ProjectSource'
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
               {
                 path: 'config',
                 element: <ProjectConfiguration />
+              },
+              {
+                path: 'source',
+                element: <ProjectSource />
               }
             ]
           },

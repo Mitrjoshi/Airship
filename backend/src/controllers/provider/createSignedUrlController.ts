@@ -1,5 +1,9 @@
 import { DistFileData } from "@/interface/request";
-import { createSignedUrl, generatePresignedUrls } from "@/services/AWSServices";
+import {
+  createSignedUrl,
+  deleteAllObjectsFromS3,
+  generatePresignedUrls,
+} from "@/services/AWSServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
@@ -23,6 +27,9 @@ export const getPresignedUrlsController = async (
       bucketName,
       region
     );
+
+    await deleteAllObjectsFromS3(workspaceId, bucketName, region);
+
     res
       .status(200)
       .send(

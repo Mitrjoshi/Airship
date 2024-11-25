@@ -12,14 +12,20 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   PutBucketCorsCommand,
+  ListObjectsV2Command,
+  ListObjectsV2Output,
+  _Object,
+  DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
   CreateDistributionCommand,
   CreateDistributionCommandInput,
+  CreateInvalidationCommand,
   DistributionConfig,
   GetDistributionCommand,
   GetDistributionConfigCommand,
+  ListInvalidationsCommand,
   UpdateDistributionCommand,
   ViewerProtocolPolicy,
 } from "@aws-sdk/client-cloudfront";
@@ -215,6 +221,8 @@ const createCloudFrontDistribution = async (
           Cookies: { Forward: "none" },
         },
         MinTTL: 0,
+        DefaultTTL: 0,
+        MaxTTL: 0,
       },
       Comment: "S3 static website with CloudFront HTTPS",
       Enabled: true,
@@ -319,22 +327,60 @@ export const getCloudfrontStatus = async (
   region: string
 ) => {
   try {
+    // Fetch AWS credentials
     const credentials = await fetchAWSCredentials(workspaceId);
 
-    const cloudFrontClient = initializeCloudFrontClient({
-      accessKeyId: credentials.accessKeyId,
-      secretAccessKey: credentials.secretAccessKey,
+    // Initialize CloudFront client
+    const cloudFrontClient = new CloudFrontClient({
+      credentials: {
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+      },
       region,
     });
-    const command = new GetDistributionCommand({ Id: distributionId });
-    const response = await cloudFrontClient.send(command);
-    return response?.Distribution?.Status;
+
+    // Fetch Distribution Status
+    const distributionCommand = new GetDistributionCommand({
+      Id: distributionId,
+    });
+    const distributionResponse = await cloudFrontClient.send(
+      distributionCommand
+    );
+
+    const distributionStatus = distributionResponse?.Distribution?.Status;
+
+    // Fetch Invalidation Status
+    const invalidationsCommand = new ListInvalidationsCommand({
+      DistributionId: distributionId,
+    });
+    const invalidationsResponse = await cloudFrontClient.send(
+      invalidationsCommand
+    );
+
+    const invalidationItems =
+      invalidationsResponse?.InvalidationList?.Items || [];
+    const latestInvalidation = invalidationItems[0];
+    const invalidationStatus = latestInvalidation?.Status || "NoInvalidations";
+
+    // Determine overall status
+    if (
+      distributionStatus === "Deployed" &&
+      invalidationStatus === "Completed"
+    ) {
+      return "Deployed";
+    } else if (
+      distributionStatus === "InProgress" ||
+      invalidationStatus === "InProgress"
+    ) {
+      return "InProgress";
+    } else {
+      return `Distribution: ${distributionStatus}, Invalidation: ${invalidationStatus}`;
+    }
   } catch (error) {
     console.error("Error fetching CloudFront status:", error);
     throw error;
   }
 };
-
 export const fetchCloudFrontSettings = async (
   workspaceId: string,
   distributionId: string,
@@ -399,6 +445,75 @@ export const updateCloudFrontSettings = async (
     return response?.Distribution;
   } catch (error) {
     console.error("Error updating CloudFront settings:", error);
+    throw error;
+  }
+};
+
+export const createCloudFrontInvalidation = async (
+  workspaceId: string,
+  distributionId: string,
+  region: string,
+  path: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const cloudFrontClient = initializeCloudFrontClient({
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+      region,
+    });
+    const command = new CreateInvalidationCommand({
+      DistributionId: distributionId,
+      InvalidationBatch: {
+        Paths: { Items: [path], Quantity: 1 },
+        CallerReference: Date.now().toString(),
+      },
+    });
+    const response = await cloudFrontClient.send(command);
+    return response?.Invalidation;
+  } catch (error) {
+    console.error("Error invalidating CloudFront:", error);
+    throw error;
+  }
+};
+
+export const getFilesFromS3 = async (
+  workspaceId: string,
+  bucketName: string,
+  region: string
+): Promise<_Object[] | undefined> => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client({ ...credentials, region });
+    const command = new ListObjectsV2Command({ Bucket: bucketName });
+    const response = await s3Client.send(command);
+    return response?.Contents;
+  } catch (error) {
+    console.error("Error fetching S3 files:", error);
+    throw error;
+  }
+};
+
+export const deleteAllObjectsFromS3 = async (
+  workspaceId: string,
+  bucketName: string,
+  region: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client({ ...credentials, region });
+    const command = new ListObjectsV2Command({ Bucket: bucketName });
+    const response = await s3Client.send(command);
+    const keys = response?.Contents?.map((item) => item.Key);
+    if (keys && keys.length > 0) {
+      const deleteCommand = new DeleteObjectsCommand({
+        Bucket: bucketName,
+        Delete: { Objects: keys.map((key) => ({ Key: key })) },
+      });
+      await s3Client.send(deleteCommand);
+    }
+  } catch (error) {
+    console.error("Error deleting S3 objects:", error);
     throw error;
   }
 };

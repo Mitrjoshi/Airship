@@ -1,23 +1,29 @@
 import LoadingButton from '@/components/shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
+import { useInvalidateCloudFront } from '@/services/useInvalidateCloudFront'
 import { useUpdateProject } from '@/services/useUpdateProject'
 import { CloudFrontDistributionConfig } from '@/types/response'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 export const ProjectConfiguration = () => {
   const { projectId } = useParams()
 
   //api hooks
-  const { data: projectData } = useGetSingleProject(projectId as string)
+  const { data: projectData, isRefetching } = useGetSingleProject(projectId as string)
   const { mutate: updateProjectMutate, isPending: isUpdatingProject } = useUpdateProject()
+  const { mutate: mutateInvalidate, isPending: isInvalidating } = useInvalidateCloudFront()
 
   //state
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  //states
   const [newConfig, setNewConfig] = useState<CloudFrontDistributionConfig | undefined>(undefined)
+  const [invalidationPath, setInvalidationPath] = useState<string>('')
 
   const ARRAY = [
     {
@@ -31,17 +37,27 @@ export const ProjectConfiguration = () => {
     },
     {
       text: 'Caching behaviors'
-    },
-    {
-      text: 'Instant rollback'
     }
   ]
 
+  const handleUpdateProject = () => {
+    if (newConfig?.DefaultRootObject === '') {
+      toast.error('The default root object is required')
+      return
+    }
+
+    updateProjectMutate({
+      distributionId: projectData?.data?.distribution_id as string,
+      region: projectData?.data?.region as string,
+      settings: newConfig as CloudFrontDistributionConfig,
+      workspaceId: projectData?.data?.workspace_id as string
+    })
+  }
+
   useEffect(() => {
     if (!projectData) return
-
-    setNewConfig(projectData?.data?.cloudfrontConfig)
-  }, [projectData])
+    if (!isRefetching) setNewConfig(projectData?.data?.cloudfrontConfig)
+  }, [projectData, isRefetching])
 
   return (
     <>
@@ -88,14 +104,7 @@ export const ProjectConfiguration = () => {
                 <LoadingButton
                   isLoading={isUpdatingProject}
                   disabled={isUpdatingProject}
-                  onClick={() => {
-                    updateProjectMutate({
-                      distributionId: projectData?.data?.distribution_id as string,
-                      region: projectData?.data?.region as string,
-                      settings: newConfig as CloudFrontDistributionConfig,
-                      workspaceId: projectData?.data?.workspace_id as string
-                    })
-                  }}
+                  onClick={handleUpdateProject}
                   size={'sm'}
                 >
                   Save
@@ -120,6 +129,116 @@ export const ProjectConfiguration = () => {
                     Add domain
                   </Button>
                   <Button size={'sm'}>Save</Button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {currentIndex === 2 && (
+            <>
+              <div className='space-y-4 p-4'>
+                <h1 className='text-lg font-semibold'>Create invalidation</h1>
+                <p className='text-sm text-muted-foreground'>
+                  Enter the file name of the object to remove from the cache. To clear all cache objects, use the
+                  wildcard (*).
+                </p>
+
+                <Input
+                  value={invalidationPath}
+                  onChange={(e) => setInvalidationPath(e.target.value)}
+                  placeholder='Example: index.html'
+                />
+
+                <div className='flex w-full justify-end gap-2'>
+                  <LoadingButton
+                    disabled={invalidationPath === '' || invalidationPath.startsWith('/')}
+                    onClick={() => {
+                      mutateInvalidate({
+                        region: projectData?.data?.region as string,
+                        workspaceId: projectData?.data?.workspace_id as string,
+                        path: `/${invalidationPath}`,
+                        distributionId: projectData?.data?.distribution_id as string
+                      })
+                    }}
+                    isLoading={isInvalidating}
+                    size={'sm'}
+                  >
+                    Invalidate
+                  </LoadingButton>
+                </div>
+              </div>
+            </>
+          )}
+
+          {currentIndex === 3 && (
+            <>
+              <div className='space-y-4 p-4'>
+                <h1 className='text-lg font-semibold'>Caching Behavior</h1>
+                <p className='text-sm text-muted-foreground'>
+                  Time to Live (TTL) is the amount of time that CloudFront caches the file.
+                </p>
+                <div className='flex items-center justify-center gap-4 pt-4'>
+                  <Label className='flex-1 space-y-2'>
+                    <p className='font-semibold'>Minimum TTL</p>
+                    <Input
+                      type='number'
+                      value={newConfig?.DefaultCacheBehavior?.MinTTL || ''}
+                      onChange={(e) =>
+                        setNewConfig({
+                          ...newConfig,
+                          DefaultCacheBehavior: {
+                            ...newConfig?.DefaultCacheBehavior,
+                            MinTTL: parseInt(e.target.value)
+                          }
+                        } as CloudFrontDistributionConfig)
+                      }
+                      placeholder='Minimum time to live in seconds.'
+                    />
+                  </Label>
+                  <Label className='flex-1 space-y-2'>
+                    <p className='font-semibold'>Maximum TTL</p>
+                    <Input
+                      type='number'
+                      value={newConfig?.DefaultCacheBehavior?.MaxTTL || ''}
+                      onChange={(e) =>
+                        setNewConfig({
+                          ...newConfig,
+                          DefaultCacheBehavior: {
+                            ...newConfig?.DefaultCacheBehavior,
+                            MaxTTL: parseInt(e.target.value)
+                          }
+                        } as CloudFrontDistributionConfig)
+                      }
+                      placeholder='Maximum time to live in seconds.'
+                    />
+                  </Label>
+                  <Label className='flex-1 space-y-2'>
+                    <p className='font-semibold'>Default TTL</p>
+                    <Input
+                      type='number'
+                      value={newConfig?.DefaultCacheBehavior?.DefaultTTL || ''}
+                      onChange={(e) =>
+                        setNewConfig({
+                          ...newConfig,
+                          DefaultCacheBehavior: {
+                            ...newConfig?.DefaultCacheBehavior,
+                            DefaultTTL: parseInt(e.target.value)
+                          }
+                        } as CloudFrontDistributionConfig)
+                      }
+                      placeholder='Default time to live in seconds.'
+                    />
+                  </Label>
+                </div>
+                <div className='flex w-full justify-end gap-2'>
+                  <LoadingButton
+                    isLoading={isUpdatingProject}
+                    disabled={isUpdatingProject}
+                    onClick={handleUpdateProject}
+                    size={'sm'}
+                  >
+                    Save
+                  </LoadingButton>
                 </div>
               </div>
             </>

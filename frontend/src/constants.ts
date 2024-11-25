@@ -28,7 +28,8 @@ export const ServerRoutes = {
   provider: {
     index: '/provider',
     createSignedUrl: '/provider/create-signed-url',
-    checkCloudfrontStatus: '/provider/cloudfront-status'
+    invalidateCloudFront: '/provider/invalidate',
+    getS3Files: '/provider/get-files'
   }
 }
 

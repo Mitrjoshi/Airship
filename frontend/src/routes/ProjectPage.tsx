@@ -3,7 +3,7 @@ import TitleHeader from '@/components/shared/TitleHeader'
 import { Button } from '@/components/ui/button'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import { SettingsIcon } from 'lucide-react'
+import { FolderOpen, SettingsIcon } from 'lucide-react'
 import { PlusIcon, UpdateIcon } from '@radix-ui/react-icons'
 import LoadingButton from '@/components/shared/LoadingButton'
 
@@ -33,6 +33,11 @@ export default function ProjectPage() {
               <UpdateIcon className='h-4 w-4' />
               Refresh
             </LoadingButton>
+
+            <Button onClick={() => navigate('source')} variant='outline' size='sm'>
+              <FolderOpen className='h-4 w-4' />
+              Source
+            </Button>
 
             <Button onClick={() => navigate('config')} variant='outline' size='sm'>
               <SettingsIcon className='h-4 w-4' />

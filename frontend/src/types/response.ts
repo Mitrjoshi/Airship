@@ -161,3 +161,12 @@ export interface CloudFrontDistributionConfig {
   ContinuousDeploymentPolicyId: string
   Staging: boolean
 }
+
+export interface GetFilesResponse {
+  Key: string
+  LastModified: Date
+  ETag: string
+  Size: number
+  StorageClass: string
+  url: string
+}
