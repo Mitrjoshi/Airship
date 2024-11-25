@@ -7,6 +7,7 @@ import FolderViewer from './FileViewer'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { buildFolderStructure, getProcessedFiles } from '@/utils/fileUtils'
 import { CustomFile } from '@/types'
+import { toast } from 'sonner'
 
 export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
@@ -84,16 +85,10 @@ function DragAndDrop({ setFiles }: DragAndDropProps) {
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    padding: '20px',
-    borderWidth: 2,
-    borderRadius: 6,
-    borderColor: '--border',
-    borderStyle: 'dashed',
-    backgroundColor: '--background',
+    borderRadius: 999,
+    // backgroundColor: '#f5f5f5',
     color: '#bdbdbd',
     outline: 'none',
-    transition: 'border .24s ease-in-out',
-    height: 200,
     justifyContent: 'center'
   }
 
@@ -109,6 +104,8 @@ function DragAndDrop({ setFiles }: DragAndDropProps) {
     borderColor: '#ff1744'
   }
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    const isValid = acceptedFiles.some((file) => file.name === 'index.html')
+    if (!isValid) return toast.error('Please upload an index.html file')
     const newFiles = getProcessedFiles(acceptedFiles)
     setFiles(newFiles)
   }, [])
@@ -130,9 +127,29 @@ function DragAndDrop({ setFiles }: DragAndDropProps) {
     [isFocused, isDragAccept, isDragReject]
   )
   return (
-    <div {...getRootProps({ style })}>
-      <input id='folder' {...{ webkitdirectory: 'true', directory: 'true' }} {...getInputProps()} />
-      {isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
+    <div className='relative flex flex-col items-center justify-center p-10'>
+      <div
+        className={`group relative aspect-square h-72 w-72 select-none flex-col p-6 text-center duration-500 ${isDragActive ? 'scale-110' : ''}`}
+        {...getRootProps({ style })}
+      >
+        <div className='spin-rotate absolute h-full w-full rounded-full border-4 border-dashed border-blue-500'></div>
+        {isDragActive ? (
+          <img
+            className={`pointer-events-none mb-2 aspect-square max-w-20 ${isDragActive ? 'wiggle' : ''}`}
+            src='/open-folder.png'
+            alt=''
+          />
+        ) : (
+          <img className='pointer-events-none mb-2 aspect-square max-w-20' src='/folder.png' alt='' />
+        )}
+
+        <input id='folder' {...{ webkitdirectory: 'true', directory: 'true' }} {...getInputProps()} />
+        <p className='text-sm'>Drag 'n' drop some files here, or click to select files</p>
+      </div>
+      <div className='mt-6 text-center font-medium'>
+        <p>Drop a folder with your site’s HTML, CSS, and JS files.</p>
+        <p>We’ll give you a link to share it.</p>
+      </div>
     </div>
   )
 }
