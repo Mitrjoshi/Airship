@@ -1,6 +1,7 @@
 import LoadingButton from '@/components/shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { FileNode } from '@/types'
+import { formatFileSize } from '@/utils/fileUtils'
 import { FolderIcon } from '@heroicons/react/24/solid'
 import { ChevronDownIcon, FileTextIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
@@ -10,14 +11,23 @@ interface I_Param {
   onUpload: () => void
   onCancel: () => void
   isGeneratingPresignedURLs: boolean
+  uploadProgress: Record<string, number>
+  isUploading: boolean
 }
 
-export default function FolderViewer({ fileStructure, onUpload, onCancel, isGeneratingPresignedURLs }: I_Param) {
+export default function FolderViewer({
+  fileStructure,
+  onUpload,
+  onCancel,
+  isUploading,
+  uploadProgress,
+  isGeneratingPresignedURLs
+}: I_Param) {
   return (
     <div>
       <ul className='mb-6 rounded-lg border p-6 shadow-sm'>
         {fileStructure.map((folder, index) => (
-          <Folder key={index} folder={folder} />
+          <Folder key={index} folder={folder} isUploading={isUploading} uploadProgress={uploadProgress} />
         ))}
       </ul>
 
@@ -33,7 +43,15 @@ export default function FolderViewer({ fileStructure, onUpload, onCancel, isGene
   )
 }
 
-function Folder({ folder }: { folder: FileNode }) {
+function Folder({
+  folder,
+  uploadProgress,
+  isUploading
+}: {
+  folder: FileNode
+  isUploading: boolean
+  uploadProgress: Record<string, number>
+}) {
   const [isOpen, setIsOpen] = useState(true)
 
   return (
@@ -54,17 +72,31 @@ function Folder({ folder }: { folder: FileNode }) {
           {folder.name}
         </div>
         <div>
-          {folder.count !== undefined && folder.count > 0 && (
-            <span className='ml-2 text-xs font-medium text-gray-800'>({folder.count} items)</span>
+          {folder.count && folder.count > 0 && (
+            <span className='text-xs font-medium text-gray-800'>({folder.count} items)</span>
           )}
-          {folder.size !== undefined && (
-            <span className='ml-2 text-xs text-gray-500'>{(folder.size / 1024).toFixed(2)} KB</span>
+          {folder.size && (
+            <div className='flex items-center gap-4'>
+              <span className='whitespace-nowrap text-right text-xs text-gray-500'>{formatFileSize(folder.size)}</span>
+              {isUploading && (
+                <div className='relative h-2.5 w-28 overflow-hidden rounded-full border'>
+                  <span
+                    className='absolute inset-0 bg-green-500'
+                    style={{ width: `${uploadProgress[folder.name] || 0}%` }}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
 
       {isOpen && (
-        <ul className='pl-6'>{folder.nodes?.map((subFolder) => <Folder key={subFolder.name} folder={subFolder} />)}</ul>
+        <ul className='pl-6'>
+          {folder.nodes?.map((subFolder) => (
+            <Folder key={subFolder.name} folder={subFolder} isUploading={isUploading} uploadProgress={uploadProgress} />
+          ))}
+        </ul>
       )}
     </li>
   )

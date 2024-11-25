@@ -69,3 +69,23 @@ export function buildFolderStructure(files: CustomFile[]): FileNode[] {
 
   return root
 }
+
+export function formatFileSize(size: number): string {
+  const KB = 1024
+  const MB = KB * 1024
+  const GB = MB * 1024
+  const TB = GB * 1024
+
+  switch (true) {
+    case size < KB:
+      return `${size} B`
+    case size < MB:
+      return `${(size / KB).toFixed(2)} KB`
+    case size < GB:
+      return `${(size / MB).toFixed(2)} MB`
+    case size < TB:
+      return `${(size / GB).toFixed(2)} GB`
+    default:
+      return `${(size / TB).toFixed(2)} TB`
+  }
+}

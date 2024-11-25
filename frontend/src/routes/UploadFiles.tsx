@@ -61,26 +61,14 @@ export default function UploadFile() {
   return (
     <>
       {files && files.length > 0 ? (
-        <>
-          <FolderViewer
-            isGeneratingPresignedURLs={isGeneratingPresignedURLs}
-            onUpload={uploadFiles}
-            fileStructure={buildFolderStructure(files)}
-            onCancel={() => setFiles([])}
-          />
-          {isUploading && (
-            <div className='mt-10 border border-red-500 p-6'>
-              {files.map((file) => (
-                <div className='flex items-center justify-between' key={file.name}>
-                  <span>{file.name}</span>
-                  <progress value={uploadProgress[file.name] || 0} max='100'>
-                    {uploadProgress[file.name] || 0}%
-                  </progress>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
+        <FolderViewer
+          isGeneratingPresignedURLs={isGeneratingPresignedURLs}
+          onUpload={uploadFiles}
+          fileStructure={buildFolderStructure(files)}
+          onCancel={() => setFiles([])}
+          uploadProgress={uploadProgress}
+          isUploading={isUploading}
+        />
       ) : (
         <DragAndDrop setFiles={setFiles} />
       )}
