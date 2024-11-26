@@ -51,7 +51,6 @@ export const verifyAuthTokenExpress = async (
 
   try {
     const decodedToken = verifyToken(token);
-    // Attach user ID to request for further usage
     req.user = { id: decodedToken.userId };
 
     if (!req.user) {

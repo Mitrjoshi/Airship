@@ -44,16 +44,16 @@ export const getProjects = async (WorkspaceId: string) => {
 };
 
 export const getSingleProject = async (projectId: string) => {
-  const { data: projects, error } = await supabase
+  const { data: projects, error: projectError } = await supabase
     .from("projects")
     .select("*, users ( username ), static_website_project ( * )")
     .eq("id", projectId)
     .maybeSingle();
 
-  if (error) {
-    console.error(error);
-    throw new Error(error.message);
+  if (projectError) {
+    throw new Error(projectError.message);
   }
+
   return {
     ...projects,
   };

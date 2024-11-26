@@ -37,7 +37,8 @@ export const createUser = async (
   const data = await supabase
     .from("users")
     .insert([{ id: getRandomUuid(), username, password, email }])
-    .select();
+    .select()
+    .maybeSingle();
 
   if (data.error) {
     throw Error(data.error.message);

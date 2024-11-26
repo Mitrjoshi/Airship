@@ -8,9 +8,7 @@ export const getWorkspacesController = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  let userId: string | undefined = req.user?.id;
-
-  console.log(userId);
+  const userId: string | undefined = req.user?.id;
 
   try {
     //Fetch workspace details

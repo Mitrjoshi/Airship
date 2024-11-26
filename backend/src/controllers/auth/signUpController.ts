@@ -26,8 +26,9 @@ export const signUpController = async (
     }
 
     const hashedPassword = await hashPassword(password);
-    await createUser(username, hashedPassword, email);
-    const token = generateToken(userExists?.data?.id);
+    const insertedData = await createUser(username, hashedPassword, email);
+
+    const token = generateToken(insertedData?.data?.id as string);
 
     res.status(200).json(createResponse(true, "User created", token));
   } catch (error) {

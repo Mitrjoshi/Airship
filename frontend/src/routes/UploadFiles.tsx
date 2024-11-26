@@ -36,8 +36,6 @@ export default function UploadFile() {
           setIsUploading(true)
           await Promise.all(
             files.map(async (fileWithMeta) => {
-              console.log(fileWithMeta)
-
               const urlObj = urls.find((urlObj: { path: string }) => urlObj.path === fileWithMeta.webkitRelativePath)
 
               if (urlObj) {

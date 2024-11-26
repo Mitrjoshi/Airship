@@ -4,7 +4,7 @@ import apiClient from '@/utils/apiClient'
 import { ServerRoutes } from '@/constants'
 
 export const getWorkspaceById = async (workspaceId: string): Promise<ApiResponse<WorkspaceDetailsResponse>> => {
-  const response = await apiClient.get(`/${ServerRoutes.workspace.index}/details/${workspaceId}`)
+  const response = await apiClient.get(`${ServerRoutes.workspace.index}/details/${workspaceId}`)
   return response.data
 }
 

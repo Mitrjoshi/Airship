@@ -374,7 +374,11 @@ export const getCloudfrontStatus = async (
     ) {
       return "InProgress";
     } else {
-      return `Distribution: ${distributionStatus}, Invalidation: ${invalidationStatus}`;
+      if (distributionStatus === "Deployed") {
+        return "Deployed";
+      } else {
+        return "InProgress";
+      }
     }
   } catch (error) {
     console.error("Error fetching CloudFront status:", error);
