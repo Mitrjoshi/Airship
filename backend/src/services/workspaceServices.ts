@@ -40,7 +40,7 @@ export const getWorkspaces = async (userId: string) => {
   const { data: workspaces, error } = await supabase
     .from("workspaces")
     .select()
-    .eq("created_by", "123");
+    .eq("created_by", userId);
 
   if (error) {
     console.error(error);

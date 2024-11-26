@@ -1,27 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from '@/utils/apiClient'
 import { ApiResponse } from '@/types/response'
-import { CreateProjectRequest } from '@/types/requests'
 import { useMutation } from '@tanstack/react-query'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { ServerRoutes } from '@/constants'
 import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 
-const createProject = async (data: CreateProjectRequest): Promise<ApiResponse> => {
-  const response = await apiClient.post(`${ServerRoutes.projects.index}/create`, data)
+const login = async (data: { username: string; password: string }): Promise<ApiResponse<string>> => {
+  const response = await apiClient.post(`${ServerRoutes.auth.login}`, data)
   return response.data
 }
 
-export const useCreateProject = () => {
+export const useLogin = () => {
   const navigate = useNavigate()
-  const { pathname } = useLocation()
 
   return useMutation({
-    mutationFn: createProject,
+    mutationFn: login,
     onSuccess: (data) => {
       if (data.data) {
-        navigate(pathname.replace('create-static-website', data.data.projectId), {
+        localStorage.setItem('token', data.data)
+        navigate('/workspace', {
           replace: true
         })
       }

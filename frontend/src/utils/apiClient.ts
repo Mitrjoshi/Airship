@@ -1,21 +1,20 @@
-import axios from "axios";
+import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
-});
+  baseURL: import.meta.env.VITE_BASE_URL
+})
 
 apiClient.interceptors.request.use(
   (config) => {
-    // const token = useTokenStore.getState().token
-    const token = false;
+    const token = localStorage.getItem('token')
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`
     }
-    return config;
+    return config
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default apiClient;
+export default apiClient

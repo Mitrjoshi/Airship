@@ -1,13 +1,20 @@
 import { getProjects } from "@/services/projectServices";
 import { getWorkspaces } from "@/services/workspaceServices";
 import { createResponse } from "@/utils/createResponse";
+import { AuthenticatedRequest } from "@/utils/tokenUtils";
 import { Request, Response } from "express";
 
-export const getWorkspacesController = async (req: Request, res: Response) => {
-  let userId = "123";
+export const getWorkspacesController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  let userId: string | undefined = req.user?.id;
+
+  console.log(userId);
+
   try {
     //Fetch workspace details
-    const workspaces = await getWorkspaces(userId);
+    const workspaces = await getWorkspaces(userId!);
 
     res
       .status(200)

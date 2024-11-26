@@ -1,10 +1,11 @@
 import { I_CREATE_DEPLOYMENT } from "@/interface/request";
 import { createDeploymentService } from "@/services/deploymentServices";
 import { createResponse } from "@/utils/createResponse";
+import { AuthenticatedRequest } from "@/utils/tokenUtils";
 import { Request, Response } from "express";
 
 export const createDeploymentController = async (
-  req: Request<{}, {}, I_CREATE_DEPLOYMENT>,
+  req: AuthenticatedRequest<{}, {}, I_CREATE_DEPLOYMENT>,
   res: Response
 ) => {
   try {
@@ -12,7 +13,7 @@ export const createDeploymentController = async (
 
     const projectData: I_CREATE_DEPLOYMENT = {
       project_id: BODY.project_id,
-      deployed_by: BODY.deployed_by || "123",
+      deployed_by: req.user?.id!,
       deployment_msg: BODY.deployment_msg,
     };
 

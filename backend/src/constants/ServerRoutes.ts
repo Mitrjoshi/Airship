@@ -8,8 +8,8 @@ export const ServerRoutes = {
     invite: "/invite",
     join: "/join",
   },
-  user: {
-    index: "/user",
+  auth: {
+    index: "/auth",
     login: "/login",
     signup: "/signup",
     profile: "/profile",

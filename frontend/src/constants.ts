@@ -1,29 +1,29 @@
 export const ServerRoutes = {
   workspace: {
-    index: 'workspace',
-    create: 'create',
-    update: 'update',
-    delete: 'delete',
-    view: 'view',
-    invite: 'invite',
-    join: 'join'
+    index: '/workspace',
+    create: '/create',
+    update: '/update',
+    delete: '/delete',
+    view: '/view',
+    invite: '/invite',
+    join: '/join'
   },
-  user: {
-    index: 'user',
-    login: 'login',
-    signup: 'signup',
-    profile: 'profile',
-    update: 'update',
-    logout: 'logout'
+  auth: {
+    index: '/auth',
+    login: '/auth/login',
+    signup: '/auth/signup',
+    profile: '/profile',
+    update: '/update',
+    logout: '/logout'
   },
   projects: {
-    index: 'projects',
-    create: 'create',
-    update: 'update',
-    delete: 'delete',
-    view: 'view',
-    invite: 'invite',
-    join: 'join'
+    index: '/projects',
+    create: '/create',
+    update: '/update',
+    delete: '/delete',
+    view: '/view',
+    invite: '/invite',
+    join: '/join'
   },
   provider: {
     index: '/provider',

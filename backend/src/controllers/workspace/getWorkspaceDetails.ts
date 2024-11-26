@@ -1,4 +1,3 @@
-import { getProjects, getSingleProject } from "@/services/projectServices";
 import { getWorkspaceById } from "@/services/workspaceServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";

@@ -2,10 +2,11 @@ import { CreateProjectRequest } from "@/interface/request";
 import { createStaticWebsite } from "@/services/AWSServices";
 import { createProject, updateProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
+import { AuthenticatedRequest } from "@/utils/tokenUtils";
 import { Request, Response } from "express";
 
 export const createProjectController = async (
-  req: Request<{}, {}, CreateProjectRequest>,
+  req: AuthenticatedRequest<{}, {}, CreateProjectRequest>,
   res: Response
 ) => {
   try {
@@ -21,7 +22,7 @@ export const createProjectController = async (
       const projectData: CreateProjectRequest = {
         name: BODY.name,
         description: BODY.description,
-        created_by: BODY.created_by,
+        created_by: req.user?.id!,
         type: BODY.type,
         bucket_name: BODY.bucket_name,
         workspace_id: BODY.workspace_id,

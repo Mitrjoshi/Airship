@@ -3,8 +3,9 @@ import { ApiResponse } from '@/types/response'
 import { useMutation } from '@tanstack/react-query'
 import { ServerRoutes } from '@/constants'
 import { AxiosError } from 'axios'
-import { queryClient } from '@/routes/Root'
 import { useNavigate, useParams } from 'react-router-dom'
+import { queryClient } from '@/main'
+import { toast } from 'sonner'
 
 interface I_Request {
   project_id: string
@@ -30,7 +31,7 @@ export const useCreateDeployment = () => {
       navigate(`/workspace/${workspaceId}/${projectId}`)
     },
     onError: (error: AxiosError<ApiResponse>) => {
-      console.error(error.response?.data?.message || error.message)
+      toast.error(error?.response?.data?.message || 'Unexpected error occurred.')
     }
   })
 }

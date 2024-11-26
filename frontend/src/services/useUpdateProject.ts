@@ -3,8 +3,9 @@ import apiClient from '@/utils/apiClient'
 import { ApiResponse, CloudFrontDistributionConfig } from '@/types/response'
 import { useMutation } from '@tanstack/react-query'
 import { ServerRoutes } from '@/constants'
-import { queryClient } from '@/routes/Root'
 import { toast } from 'sonner'
+import { queryClient } from '@/main'
+import { AxiosError } from 'axios'
 
 const updateProject = async (data: {
   workspaceId: string
@@ -24,9 +25,8 @@ export const useUpdateProject = () => {
         queryKey: ['GET_SINGLE_PROJECT']
       })
     },
-    onError: (error: any) => {
-      toast.error('Uh oh! Something went wrong.')
-      console.error(error.response?.data?.message || error.message)
+    onError: (error: AxiosError<ApiResponse>) => {
+      toast.error(error?.response?.data?.message || 'Unexpected error occurred.')
     }
   })
 }

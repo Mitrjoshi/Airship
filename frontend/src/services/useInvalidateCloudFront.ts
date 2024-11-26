@@ -4,6 +4,7 @@ import { ApiResponse } from '@/types/response'
 import { useMutation } from '@tanstack/react-query'
 import { ServerRoutes } from '@/constants'
 import { toast } from 'sonner'
+import { AxiosError } from 'axios'
 
 interface I_Request {
   workspaceId: string
@@ -20,9 +21,8 @@ const invalidate = async (data: I_Request): Promise<ApiResponse> => {
 export const useInvalidateCloudFront = () => {
   return useMutation({
     mutationFn: invalidate,
-    onError: (error: any) => {
-      toast.error('Uh oh! Something went wrong.')
-      console.error(error.response?.data?.message || error.message)
+    onError: (error: AxiosError<ApiResponse>) => {
+      toast.error(error?.response?.data?.message || 'Unexpected error occurred.')
     }
   })
 }

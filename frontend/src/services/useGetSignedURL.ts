@@ -3,6 +3,7 @@ import { ApiResponse, PresignedUrlResponse } from '@/types/response'
 import apiClient from '@/utils/apiClient'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { toast } from 'sonner'
 
 interface DistFiles {
   path: string
@@ -25,7 +26,7 @@ export const useGetPresignedURLs = () => {
   return useMutation({
     mutationFn: getPresignedURLs,
     onError: (error: AxiosError<ApiResponse>) => {
-      console.error(error.response?.data?.message || error.message)
+      toast.error(error?.response?.data?.message || 'Unexpected error occurred.')
     }
   })
 }

@@ -1,14 +1,18 @@
 import { I_CREATE_WORKSPACE_BODY } from "@/interface/request";
 import { createWorkspace } from "@/services/workspaceServices";
 import { createResponse } from "@/utils/createResponse";
+import { AuthenticatedRequest } from "@/utils/tokenUtils";
 import { Request, Response } from "express";
 
 export const createWorkspaceController = async (
-  req: Request<{}, {}, I_CREATE_WORKSPACE_BODY>,
+  req: AuthenticatedRequest<{}, {}, I_CREATE_WORKSPACE_BODY>,
   res: Response
 ) => {
   try {
-    const INSERT_DATA = await createWorkspace(req.body);
+    const INSERT_DATA = await createWorkspace({
+      ...req.body,
+      created_by: req.user?.id!,
+    });
 
     const NEW_INSERT_DATA = {
       workspace_id: INSERT_DATA?.data.id,

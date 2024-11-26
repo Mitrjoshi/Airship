@@ -1,6 +1,7 @@
 import { ServerRoutes } from "@/constants/ServerRoutes";
 import { createDeploymentController } from "@/controllers/deployments/createDeploymentController";
 import { getDeploymentsController } from "@/controllers/deployments/getDeploymentsController";
+import { verifyAuthTokenExpress } from "@/utils/tokenUtils";
 import { Router } from "express";
 
 const router = Router();

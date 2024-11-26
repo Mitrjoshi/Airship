@@ -3,11 +3,12 @@ import { getProjectsController } from "@/controllers/projects/getProjectsControl
 import { createWorkspaceController } from "@/controllers/workspace/createWorkspaceController";
 import { getWorkspaceDetailsController } from "@/controllers/workspace/getWorkspaceDetails";
 import { getWorkspacesController } from "@/controllers/workspace/getWorkspacesController";
+import { verifyAuthTokenExpress } from "@/utils/tokenUtils";
 import { Router } from "express";
 
 const router = Router();
 
-router.get("/", getWorkspacesController);
+router.get("/", verifyAuthTokenExpress, getWorkspacesController);
 
 router.get(`/:workspaceId`, getProjectsController);
 

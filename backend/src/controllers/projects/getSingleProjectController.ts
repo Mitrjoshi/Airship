@@ -4,17 +4,18 @@ import {
 } from "@/services/AWSServices";
 import { getSingleProject } from "@/services/projectServices";
 import { createResponse } from "@/utils/createResponse";
+import { AuthenticatedRequest } from "@/utils/tokenUtils";
 import { Request, Response } from "express";
 
 export const getSingleProjectController = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ) => {
   const { projectId } = req.params;
 
   try {
     //Fetch project details
-    const projects = await getSingleProject(projectId);
+    const projects = await getSingleProject(projectId as string);
 
     const status = await getCloudfrontStatus(
       projects.workspace_id,
