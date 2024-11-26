@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useGetDeploymentsByProjectId } from '@/services/useGetDeploymentsByProjectId'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
-import { checkStatusResponse, getProjectsResponse } from '@/types/response'
+import { checkStatusResponse, DeploymentsResponse, getProjectsResponse } from '@/types/response'
 import { formatDate } from '@/utils/utils'
 import { useParams } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -14,9 +14,14 @@ export default function ProjectDetails() {
   const { data: deploymentData } = useGetDeploymentsByProjectId(projectId as string)
 
   return (
-    projectData && (
+    projectData &&
+    deploymentData?.data && (
       <>
-        <OverviewCard status={projectData?.data?.status as checkStatusResponse} projectData={projectData?.data} />
+        <OverviewCard
+          deploymentData={deploymentData?.data[0]}
+          status={projectData?.data?.status as checkStatusResponse}
+          projectData={projectData?.data}
+        />
 
         {deploymentData?.data && deploymentData?.data?.length > 0 && (
           <div className='mt-8'>
@@ -43,7 +48,7 @@ export default function ProjectDetails() {
                         </div>
                         <p>{deployment.users.username}</p>
                       </TableCell>
-                      <TableCell>{deployment.id}</TableCell>
+                      <TableCell>{deployment?.id}</TableCell>
                       <TableCell>{deployment.deployment_msg}</TableCell>
                       <TableCell className='text-right'>{formatDate(deployment.created_at)}</TableCell>
                     </TableRow>
@@ -67,9 +72,10 @@ export default function ProjectDetails() {
 interface OverviewCardProps {
   projectData: getProjectsResponse | undefined
   status: checkStatusResponse
+  deploymentData: DeploymentsResponse
 }
 
-function OverviewCard({ projectData, status }: OverviewCardProps) {
+function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps) {
   return (
     projectData && (
       <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
@@ -111,18 +117,28 @@ function OverviewCard({ projectData, status }: OverviewCardProps) {
                 )}
               </p>
             </div>
-            <div>
-              <p className='text-muted-foreground'>Created</p>
-              <p>
-                {formatDate(projectData?.created_at as Date)} by{' '}
-                <span className='cursor-pointer font-semibold duration-150'>@{projectData?.users.username}</span>
-              </p>
-            </div>
+            {deploymentData && (
+              <div>
+                <p className='text-muted-foreground'>Deployed</p>
+                <p>
+                  at {formatDate(deploymentData?.created_at as Date)} by{' '}
+                  <span className='cursor-pointer font-semibold duration-150'>@{deploymentData?.users.username}</span>
+                </p>
+              </div>
+            )}
           </li>
-          <li>
-            <p className='text-muted-foreground'>Deployment message</p>
-            <p>Initial deployment</p>
-          </li>
+          {deploymentData && (
+            <>
+              <li>
+                <p className='text-muted-foreground'>Deployment ID</p>
+                <p>{deploymentData?.id}</p>
+              </li>
+              <li>
+                <p className='text-muted-foreground'>Deployment message</p>
+                <p>{deploymentData?.deployment_msg}</p>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     )

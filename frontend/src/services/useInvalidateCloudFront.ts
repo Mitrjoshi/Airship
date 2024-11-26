@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { ServerRoutes } from '@/constants'
 import { toast } from 'sonner'
 import { AxiosError } from 'axios'
+import { queryClient } from '@/main'
 
 interface I_Request {
   workspaceId: string
@@ -21,6 +22,11 @@ const invalidate = async (data: I_Request): Promise<ApiResponse> => {
 export const useInvalidateCloudFront = () => {
   return useMutation({
     mutationFn: invalidate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['GET_SINGLE_PROJECT']
+      })
+    },
     onError: (error: AxiosError<ApiResponse>) => {
       toast.error(error?.response?.data?.message || 'Unexpected error occurred.')
     }
