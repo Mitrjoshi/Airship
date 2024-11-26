@@ -1,16 +1,64 @@
+import { Button } from '@/components/ui/button'
+import { useGetDeploymentsByProjectId } from '@/services/useGetDeploymentsByProjectId'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { checkStatusResponse, getProjectsResponse } from '@/types/response'
 import { formatDate } from '@/utils/utils'
 import { useParams } from 'react-router-dom'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function ProjectDetails() {
   const { projectId } = useParams()
+
+  //api-hooks
   const { data: projectData } = useGetSingleProject(projectId as string)
+  const { data: deploymentData } = useGetDeploymentsByProjectId(projectId as string)
 
   return (
-    <div>
-      <OverviewCard status={projectData?.data?.status as checkStatusResponse} projectData={projectData?.data} />
-    </div>
+    projectData && (
+      <>
+        <OverviewCard status={projectData?.data?.status as checkStatusResponse} projectData={projectData?.data} />
+
+        <div className='mt-8'>
+          <h1 className='mb-2 text-lg font-semibold'>Deployments</h1>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className='font-medium'>Sr. No.</TableHead>
+                <TableHead className='font-medium'>Deployed by</TableHead>
+                <TableHead className='font-medium'>Deployment id</TableHead>
+                <TableHead className='font-medium'>Deployment message</TableHead>
+                <TableHead className='text-right font-medium'>Deployed at</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deploymentData?.data?.map((deployment, index) => (
+                <>
+                  <TableRow>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell className='flex items-center justify-start gap-2'>
+                      <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-400 text-lg font-medium'>
+                        {deployment.users.username.charAt(0)}
+                      </div>
+                      <p>{deployment.users.username}</p>
+                    </TableCell>
+                    <TableCell>{deployment.id}</TableCell>
+                    <TableCell>{deployment.deployment_msg}</TableCell>
+                    <TableCell className='text-right'>{formatDate(deployment.created_at)}</TableCell>
+                  </TableRow>
+                </>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className='text-center'>
+            <Button size='sm'>
+              <p>View all...</p>
+            </Button>
+          </div>
+        </div>
+      </>
+    )
   )
 }
 

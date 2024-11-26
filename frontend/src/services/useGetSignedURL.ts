@@ -24,7 +24,6 @@ const getPresignedURLs = async (data: GetPresignedURLRequest): Promise<ApiRespon
 export const useGetPresignedURLs = () => {
   return useMutation({
     mutationFn: getPresignedURLs,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: AxiosError<ApiResponse>) => {
       console.error(error.response?.data?.message || error.message)
     }

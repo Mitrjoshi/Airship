@@ -1,10 +1,10 @@
-import { I_CREATE_INTERFACE_BODY } from "@/interface/request";
+import { I_CREATE_WORKSPACE_BODY } from "@/interface/request";
 import { createWorkspace } from "@/services/workspaceServices";
 import { createResponse } from "@/utils/createResponse";
 import { Request, Response } from "express";
 
 export const createWorkspaceController = async (
-  req: Request<{}, {}, I_CREATE_INTERFACE_BODY>,
+  req: Request<{}, {}, I_CREATE_WORKSPACE_BODY>,
   res: Response
 ) => {
   try {

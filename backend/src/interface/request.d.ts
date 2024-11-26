@@ -3,7 +3,7 @@ import {
   ViewerProtocolPolicy,
 } from "@aws-sdk/client-cloudfront";
 
-export interface I_CREATE_INTERFACE_BODY {
+export interface I_CREATE_WORKSPACE_BODY {
   name: string;
   company_name: string;
   description: string;
@@ -29,4 +29,10 @@ export interface CreateProjectRequest {
 export interface DistFileData {
   path: string;
   type: string;
+}
+
+export interface I_CREATE_DEPLOYMENT {
+  project_id: string;
+  deployed_by: string;
+  deployment_msg: string;
 }

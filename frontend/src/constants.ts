@@ -30,6 +30,10 @@ export const ServerRoutes = {
     createSignedUrl: '/provider/create-signed-url',
     invalidateCloudFront: '/provider/invalidate',
     getS3Files: '/provider/get-files'
+  },
+  deployments: {
+    index: '/deployments',
+    create: '/deployments/create'
   }
 }
 

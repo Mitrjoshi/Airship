@@ -6,9 +6,9 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get(`/:projectId`, getSingleProjectController);
 router.post(ServerRoutes.projects.create, createProjectController);
 router.post(ServerRoutes.projects.index, createProjectController);
 router.post(ServerRoutes.projects.update, updateProjectController);
-router.get(`/:projectId`, getSingleProjectController);
 
 export default router;

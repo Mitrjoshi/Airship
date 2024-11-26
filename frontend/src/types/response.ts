@@ -170,3 +170,12 @@ export interface GetFilesResponse {
   StorageClass: string
   url: string
 }
+
+export interface DeploymentsResponse {
+  id: string
+  created_at: Date
+  project_id: string
+  deployed_by: string
+  deployment_msg: string
+  users: getUserDetaills
+}

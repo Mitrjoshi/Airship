@@ -31,4 +31,8 @@ export const ServerRoutes = {
     invalidateCloudFront: "/invalidate",
     getS3Files: "/get-files",
   },
+  deployments: {
+    index: "/deployments",
+    create: "/create",
+  },
 };

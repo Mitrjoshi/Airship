@@ -8,12 +8,14 @@ import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { buildFolderStructure, getProcessedFiles } from '@/utils/fileUtils'
 import { CustomFile } from '@/types'
 import { toast } from 'sonner'
+import { useCreateDeployment } from '@/services/useCreateDeployment'
 
 export default function UploadFile() {
   const { workspaceId, projectId } = useParams()
   const { data: projectData } = useGetSingleProject(projectId as string)
 
   const { mutate: mutatePresignedURLs, isPending: isGeneratingPresignedURLs } = useGetPresignedURLs()
+  const { mutate: mutateCreateDeployment } = useCreateDeployment()
 
   const [files, setFiles] = useState<CustomFile[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -51,6 +53,10 @@ export default function UploadFile() {
               }
             })
           )
+          mutateCreateDeployment({
+            deployment_msg: 'Deployed',
+            project_id: projectId as string
+          })
           setFiles([])
           setIsUploading(false)
           setUploadProgress({})

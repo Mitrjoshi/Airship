@@ -13,6 +13,9 @@ import UploadFiles from './routes/UploadFiles'
 import ProjectDetails from './routes/ProjectDetails'
 import { ProjectConfiguration } from './routes/ProjectConfiguration'
 import { ProjectSource } from './routes/ProjectSource'
+import { SignUp } from './routes/SignUp'
+import { Auth } from './routes/Auth'
+import Login from './routes/Login'
 
 const router = createBrowserRouter([
   {
@@ -21,12 +24,26 @@ const router = createBrowserRouter([
       <div className='p-6'>
         Landing page
         <div className='mt-2'>
-          <Link to='/workspace'>
+          <Link to='/auth'>
             <Button>Login</Button>
           </Link>
         </div>
       </div>
     )
+  },
+  {
+    path: '/auth',
+    element: <Auth />,
+    children: [
+      {
+        index: true,
+        element: <Login />
+      },
+      {
+        path: 'sign-up',
+        element: <SignUp />
+      }
+    ]
   },
   {
     path: '/workspace',

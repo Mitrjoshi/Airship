@@ -1,8 +1,8 @@
 import { getRandomUuid } from "@/functions/getRandomUuid";
-import { I_CREATE_INTERFACE_BODY } from "@/interface/request";
+import { I_CREATE_WORKSPACE_BODY } from "@/interface/request";
 import { supabase } from "@/lib/supabase";
 
-export const createWorkspace = async (DATA: I_CREATE_INTERFACE_BODY) => {
+export const createWorkspace = async (DATA: I_CREATE_WORKSPACE_BODY) => {
   const data = await supabase
     .from("workspaces")
     .insert([
