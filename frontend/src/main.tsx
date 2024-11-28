@@ -18,6 +18,7 @@ import { Auth } from './routes/Auth'
 import Login from './routes/Login'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
+import { WorkspaceSettings } from './routes/WorkspaceSettings'
 
 export const queryClient = new QueryClient()
 
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <ProjectList />
+          },
+          {
+            path: 'settings',
+            element: <WorkspaceSettings />
           },
           {
             path: ':projectId',

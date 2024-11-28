@@ -16,6 +16,7 @@ import {
 import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/outline'
 import PageContainer from '@/components/shared/PageContainer'
 import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
+import { SettingsIcon } from 'lucide-react'
 
 export default function ProjectList() {
   const { workspaceId } = useParams()
@@ -24,7 +25,21 @@ export default function ProjectList() {
 
   return (
     <PageContainer>
-      <TitleHeader title={workspaceData?.data?.name || 'Workspace Name'} showBackBtn element={<DeploymentDropdown />} />
+      <TitleHeader
+        title={workspaceData?.data?.name || 'Workspace Name'}
+        showBackBtn
+        element={
+          <div className='flex items-center gap-2'>
+            <Link to='settings'>
+              <Button variant={'outline'} size={'sm'}>
+                <SettingsIcon />
+                Settings
+              </Button>
+            </Link>
+            <DeploymentDropdown />
+          </div>
+        }
+      />
       <div className='grid grid-cols-3 gap-6'>
         {workspaceData?.data?.projects?.map((project) => (
           <ProjectCard

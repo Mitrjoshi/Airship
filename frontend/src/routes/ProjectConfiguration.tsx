@@ -1,7 +1,18 @@
 import LoadingButton from '@/components/shared/LoadingButton'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useDeleteProject } from '@/services/useDeleteProject'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { useInvalidateCloudFront } from '@/services/useInvalidateCloudFront'
 import { useUpdateProject } from '@/services/useUpdateProject'
@@ -17,13 +28,13 @@ export const ProjectConfiguration = () => {
   const { data: projectData, isRefetching } = useGetSingleProject(projectId as string)
   const { mutate: updateProjectMutate, isPending: isUpdatingProject } = useUpdateProject()
   const { mutate: mutateInvalidate, isPending: isInvalidating } = useInvalidateCloudFront()
+  const { mutate: deleteProjectMutate, isPending: isDeletingProject } = useDeleteProject()
 
   //state
   const [currentIndex, setCurrentIndex] = useState(0)
-
-  //states
   const [newConfig, setNewConfig] = useState<CloudFrontDistributionConfig | undefined>(undefined)
   const [invalidationPath, setInvalidationPath] = useState<string>('')
+  const [deleteCommand, setDeleteCommand] = useState<string>('')
 
   const ARRAY = [
     {
@@ -41,6 +52,8 @@ export const ProjectConfiguration = () => {
   ]
 
   const handleUpdateProject = () => {
+    if (newConfig === projectData?.data?.cloudfrontConfig) return
+
     if (newConfig?.DefaultRootObject === '') {
       toast.error('The default root object is required')
       return
@@ -80,35 +93,109 @@ export const ProjectConfiguration = () => {
         <div className='w-full space-y-4'>
           {currentIndex === 0 && (
             <>
-              <div className='space-y-4 rounded-lg border p-4'>
-                <h1 className='text-lg font-semibold'>Project Name</h1>
-                <p className='text-sm text-muted-foreground'>Used to identify your Project on the Dashboard.</p>
-                <Input placeholder='Project Name' value={projectData?.data?.name} />
+              <div className='space-y-4 rounded-lg border'>
+                <div className='space-y-2 p-4'>
+                  <h1 className='text-lg font-semibold'>Project Name</h1>
+                  <p className='text-sm text-muted-foreground'>Used to identify your Project on the Dashboard.</p>
+                  <Input placeholder='Project Name' value={projectData?.data?.name} />
+                </div>
+
+                <div className='space-y-2 p-4'>
+                  <h1 className='text-lg font-semibold'>Default Root Object</h1>
+                  <p className='text-sm text-muted-foreground'>
+                    The object (file name) to return when a viewer requests the root URL (/) instead of a specific
+                    object.
+                  </p>
+                  <Input
+                    onChange={(e) =>
+                      setNewConfig({ ...newConfig, DefaultRootObject: e.target.value } as CloudFrontDistributionConfig)
+                    }
+                    placeholder='Default Root Object'
+                    value={newConfig?.DefaultRootObject}
+                  />
+                </div>
+
+                <div className='space-y-2 p-4'>
+                  <h1 className='text-lg font-semibold'>Default Error Object</h1>
+                  <p className='text-sm text-muted-foreground'>
+                    The object (file name) to return when a viewer requests the root URL (/) instead of a specific
+                    object.
+                  </p>
+                  <Input placeholder='Default Root Object' value={'error.html'} />
+                </div>
+
+                <div className='flex w-full justify-end border-t p-4'>
+                  <LoadingButton
+                    isLoading={isUpdatingProject}
+                    disabled={isUpdatingProject}
+                    onClick={handleUpdateProject}
+                    size={'sm'}
+                  >
+                    Save
+                  </LoadingButton>
+                </div>
               </div>
 
-              <div className='space-y-4 rounded-lg border p-4'>
-                <h1 className='text-lg font-semibold'>Default Root Object</h1>
+              <div className='space-y-4 rounded-lg border border-red-500 p-4'>
+                <h1 className='text-lg font-semibold'>Delete Project</h1>
                 <p className='text-sm text-muted-foreground'>
-                  The object (file name) to return when a viewer requests the root URL (/) instead of a specific object.
+                  The project will be permanently deleted, including its deployments and domains. This action is
+                  irreversible and can not be undone.
                 </p>
-                <Input
-                  onChange={(e) =>
-                    setNewConfig({ ...newConfig, DefaultRootObject: e.target.value } as CloudFrontDistributionConfig)
-                  }
-                  placeholder='Default Root Object'
-                  value={newConfig?.DefaultRootObject}
-                />
-              </div>
 
-              <div className='flex w-full justify-end'>
-                <LoadingButton
-                  isLoading={isUpdatingProject}
-                  disabled={isUpdatingProject}
-                  onClick={handleUpdateProject}
-                  size={'sm'}
-                >
-                  Save
-                </LoadingButton>
+                <div className='flex w-full justify-end'>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button disabled={!projectData} variant={'destructive'} className='bg-red-500' size={'sm'}>
+                        Delete Project
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className='mb-4'>Delete Project</DialogTitle>
+                        <DialogDescription>This action cannot be undone.</DialogDescription>
+                        <DialogDescription>Are you sure you want to delete this Redis instance?</DialogDescription>
+                        <DialogDescription>
+                          Type <span className='font-semibold'>sudo delete {projectData?.data?.name}</span> below to
+                          confirm.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className='grid gap-4 py-4'>
+                        <Input onChange={(e) => setDeleteCommand(e.target.value)} className='col-span-3' />
+                      </div>
+                      <DialogFooter>
+                        <DialogClose>
+                          <Button variant={'outline'} size={'sm'}>
+                            Cancel
+                          </Button>
+                        </DialogClose>
+                        <LoadingButton
+                          disabled={deleteCommand !== `sudo delete ${projectData?.data?.name}` || isDeletingProject}
+                          size={'sm'}
+                          variant={'destructive'}
+                          onClick={() => {
+                            if (deleteCommand !== `sudo delete ${projectData?.data?.name}`) {
+                              toast.error('Invalid command.')
+                              return
+                            }
+
+                            deleteProjectMutate({
+                              workspaceId: projectData?.data?.workspace_id as string,
+                              projectId: projectData?.data?.id as string,
+                              region: projectData?.data?.region as string,
+                              distributionId: projectData?.data?.distribution_id as string,
+                              bucketName: projectData?.data?.bucket_name as string
+                            })
+                          }}
+                          isLoading={isDeletingProject}
+                          type='submit'
+                        >
+                          Delete Project
+                        </LoadingButton>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
             </>
           )}
@@ -182,7 +269,7 @@ export const ProjectConfiguration = () => {
                     <p className='font-semibold'>Minimum TTL</p>
                     <Input
                       type='number'
-                      value={newConfig?.DefaultCacheBehavior?.MinTTL || ''}
+                      value={newConfig?.DefaultCacheBehavior?.MinTTL}
                       onChange={(e) =>
                         setNewConfig({
                           ...newConfig,
@@ -199,7 +286,7 @@ export const ProjectConfiguration = () => {
                     <p className='font-semibold'>Maximum TTL</p>
                     <Input
                       type='number'
-                      value={newConfig?.DefaultCacheBehavior?.MaxTTL || ''}
+                      value={newConfig?.DefaultCacheBehavior?.MaxTTL}
                       onChange={(e) =>
                         setNewConfig({
                           ...newConfig,
@@ -216,7 +303,7 @@ export const ProjectConfiguration = () => {
                     <p className='font-semibold'>Default TTL</p>
                     <Input
                       type='number'
-                      value={newConfig?.DefaultCacheBehavior?.DefaultTTL || ''}
+                      value={newConfig?.DefaultCacheBehavior?.DefaultTTL}
                       onChange={(e) =>
                         setNewConfig({
                           ...newConfig,

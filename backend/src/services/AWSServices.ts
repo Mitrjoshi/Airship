@@ -16,12 +16,15 @@ import {
   ListObjectsV2Output,
   _Object,
   DeleteObjectsCommand,
+  DeleteBucketCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import {
   CloudFrontClient,
   CreateDistributionCommand,
   CreateDistributionCommandInput,
   CreateInvalidationCommand,
+  DeleteDistributionCommand,
   DistributionConfig,
   GetDistributionCommand,
   GetDistributionConfigCommand,
@@ -520,4 +523,71 @@ export const deleteAllObjectsFromS3 = async (
     console.error("Error deleting S3 objects:", error);
     throw error;
   }
+};
+
+export const deleteBucket = async (
+  workspaceId: string,
+  bucketName: string,
+  region: string
+) => {
+  try {
+    // Fetch AWS credentials
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const s3Client = initializeS3Client({ ...credentials, region });
+
+    // List all objects in the bucket
+    const listCommand = new ListObjectsV2Command({ Bucket: bucketName });
+    let listResponse = await s3Client.send(listCommand);
+
+    while (listResponse.Contents && listResponse.Contents.length > 0) {
+      // Delete each object
+      for (const object of listResponse.Contents) {
+        if (object.Key) {
+          const deleteCommand = new DeleteObjectCommand({
+            Bucket: bucketName,
+            Key: object.Key,
+          });
+          await s3Client.send(deleteCommand);
+        }
+      }
+
+      // Fetch next batch of objects if there are more
+      if (listResponse.IsTruncated) {
+        listResponse = await s3Client.send(
+          new ListObjectsV2Command({
+            Bucket: bucketName,
+            ContinuationToken: listResponse.NextContinuationToken,
+          })
+        );
+      } else {
+        break;
+      }
+    }
+
+    // Delete the bucket
+    const deleteBucketCommand = new DeleteBucketCommand({ Bucket: bucketName });
+    await s3Client.send(deleteBucketCommand);
+
+    console.log(`Bucket ${bucketName} deleted successfully.`);
+  } catch (error) {
+    console.error("Error deleting S3 bucket:", error);
+    throw error;
+  }
+};
+
+export const deleteCloudfrontDistribution = async (
+  workspaceId: string,
+  distributionId: string,
+  region: string
+) => {
+  try {
+    const credentials = await fetchAWSCredentials(workspaceId);
+    const cloudFrontClient = initializeCloudFrontClient({
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+      region,
+    });
+    const command = new DeleteDistributionCommand({ Id: distributionId });
+    await cloudFrontClient.send(command);
+  } catch (error) {}
 };

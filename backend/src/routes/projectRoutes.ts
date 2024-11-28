@@ -1,5 +1,6 @@
 import { ServerRoutes } from "@/constants/ServerRoutes";
 import { createProjectController } from "@/controllers/projects/createProjectController";
+import { deleteProjectController } from "@/controllers/projects/deleteProjectController";
 import { getSingleProjectController } from "@/controllers/projects/getSingleProjectController";
 import { updateProjectController } from "@/controllers/projects/updateProjectController";
 import { Router } from "express";
@@ -10,5 +11,6 @@ router.get(`/:projectId`, getSingleProjectController);
 router.post(ServerRoutes.projects.create, createProjectController);
 router.post(ServerRoutes.projects.index, createProjectController);
 router.post(ServerRoutes.projects.update, updateProjectController);
+router.post(ServerRoutes.projects.delete, deleteProjectController);
 
 export default router;

@@ -1,7 +1,27 @@
-import { BellIcon } from 'lucide-react'
+import { BellIcon, LogOut, Moon, SettingsIcon, Sun } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '../ui/dropdown-menu'
+import { useTheme } from '../themes/ThemeProvider'
+import { useState } from 'react'
 
 export default function NavBar() {
+  const { setTheme, theme } = useTheme()
+  const [isRotating, setIsRotating] = useState(false)
+
+  const handleThemeSwitch = () => {
+    setIsRotating(true)
+    setTimeout(() => {
+      setTheme(theme === 'dark' ? 'light' : 'dark')
+      setIsRotating(false)
+    }, 300) // Match this duration to the CSS animation time
+  }
+
   return (
     <nav className='flex h-14 items-center justify-between border-b p-4'>
       <Link to='/workspace' className='flex items-center space-x-1'>
@@ -20,7 +40,35 @@ export default function NavBar() {
         <div className='flex size-8 items-center justify-center rounded-full border'>
           <BellIcon size={20} strokeWidth={1.5} />
         </div>
-        <div className='size-8 rounded-full bg-gradient-to-br from-emerald-400 to-amber-300' />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <div className='size-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-300' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className='mr-5 w-[200px]'>
+            <DropdownMenuItem>
+              <SettingsIcon />
+              Account Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault()
+                handleThemeSwitch()
+              }}
+            >
+              <div className={`icon-wrapper ${isRotating ? 'rotating' : ''}`}>
+                {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+              </div>
+              Theme
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <LogOut />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </nav>
   )

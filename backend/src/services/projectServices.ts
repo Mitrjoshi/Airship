@@ -58,3 +58,14 @@ export const getSingleProject = async (projectId: string) => {
     ...projects,
   };
 };
+
+export const deleteProject = async (projectId: string) => {
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", projectId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};

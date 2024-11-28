@@ -20,7 +20,7 @@ export const ServerRoutes = {
     index: '/projects',
     create: '/create',
     update: '/update',
-    delete: '/delete',
+    delete: '/projects/delete',
     view: '/view',
     invite: '/invite',
     join: '/join'

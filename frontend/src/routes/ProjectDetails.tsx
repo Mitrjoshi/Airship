@@ -105,7 +105,7 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
                 {status === 'InProgress' && (
                   <>
                     <span className='h-2.5 w-2.5 rounded-full bg-yellow-500'></span>
-                    <span>Deploying</span>
+                    <span>Deploying, this may take a while</span>
                   </>
                 )}
 
