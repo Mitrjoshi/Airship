@@ -99,7 +99,7 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
                 {status === 'InProgress' && (
                   <>
                     <span className='h-2.5 w-2.5 rounded-full bg-yellow-500'></span>
-                    <span>Deploying, this may take a while</span>
+                    <span>Deploying, this may take a few minutes.</span>
                   </>
                 )}
 
@@ -133,22 +133,29 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
               </button>
             </div>
 
-            <div className='flex items-center gap-1.5 text-muted-foreground'>
-              <MessageSquareText size={16} className='shrink-0' />
-              <p>{deploymentData.deployment_msg}</p>
-            </div>
+            {deploymentData && (
+              <div className='flex items-center gap-1.5 text-muted-foreground'>
+                <MessageSquareText size={16} className='shrink-0' />
+                <p>{deploymentData?.deployment_msg}</p>
+              </div>
+            )}
           </div>
 
           <div className='space-y-4 whitespace-nowrap'>
-            <p className='flex items-center gap-1.5 text-muted-foreground'>
-              <UserRound size={16} />
-              Deployed by <span className='font-medium underline'>@{deploymentData.users.username}</span>
-            </p>
-            <p className='flex items-center gap-1.5 text-muted-foreground'>
-              <Calendar size={16} />
-              Deployed at
-              <span className='font-medium'>{formatDate(deploymentData.created_at)}</span>
-            </p>
+            {deploymentData && (
+              <>
+                <p className='flex items-center gap-1.5 text-muted-foreground'>
+                  <UserRound size={16} />
+                  Deployed by <span className='font-medium underline'>@{deploymentData?.users?.username}</span>
+                </p>
+
+                <p className='flex items-center gap-1.5 text-muted-foreground'>
+                  <Calendar size={16} />
+                  Deployed at
+                  <span className='font-medium'>{formatDate(deploymentData?.created_at)}</span>
+                </p>
+              </>
+            )}
 
             <p className='flex items-center gap-1.5 text-muted-foreground'>
               <Cylinder size={16} />
