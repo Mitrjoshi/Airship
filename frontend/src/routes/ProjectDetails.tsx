@@ -57,7 +57,7 @@ export default function ProjectDetails() {
               </TableBody>
             </Table>
 
-            <div className='text-center'>
+            <div className='mt-4 text-center'>
               <Button size='sm'>
                 <p>View all...</p>
               </Button>
@@ -79,7 +79,8 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
   return (
     projectData && (
       <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
-        <div className='aspect-video h-auto w-full max-w-md rounded-lg bg-secondary'></div>
+        <div className='aspect-video h-auto w-full max-w-md rounded-lg bg-secondary' />
+
         <ul className='relative space-y-4 text-sm'>
           <li>
             <p className='text-muted-foreground'>Bucket name</p>

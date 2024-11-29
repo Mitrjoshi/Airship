@@ -56,110 +56,226 @@ export interface PresignedUrlResponse {
 }
 
 export interface CloudFrontDistributionConfig {
-  CallerReference: string
-  Aliases: {
-    Quantity: number
+  CallerReference: string // Required
+  Aliases?: {
+    Quantity: number // Required
+    Items?: string[]
   }
-  DefaultRootObject: string
+  DefaultRootObject?: string
   Origins: {
-    Quantity: number
+    // Required
+    Quantity: number // Required
     Items: Array<{
-      Id: string
-      DomainName: string
-      OriginPath: string
-      CustomHeaders: {
-        Quantity: number
+      Id: string // Required
+      DomainName: string // Required
+      OriginPath?: string
+      CustomHeaders?: {
+        Quantity: number // Required
+        Items?: Array<{
+          HeaderName: string // Required
+          HeaderValue: string // Required
+        }>
       }
-      S3OriginConfig: {
-        OriginAccessIdentity: string
+      S3OriginConfig?: {
+        OriginAccessIdentity: string // Required
       }
-      ConnectionAttempts: number
-      ConnectionTimeout: number
-      OriginShield: {
-        Enabled: boolean
+      CustomOriginConfig?: {
+        HTTPPort: number // Required
+        HTTPSPort: number // Required
+        OriginProtocolPolicy: 'http-only' | 'https-only' | 'match-viewer' // Required
+        OriginSslProtocols?: {
+          Quantity: number // Required
+          Items: Array<'SSLv3' | 'TLSv1' | 'TLSv1.1' | 'TLSv1.2'> // Required
+        }
+        OriginReadTimeout?: number
+        OriginKeepaliveTimeout?: number
       }
-      OriginAccessControlId: string
+      ConnectionAttempts?: number
+      ConnectionTimeout?: number
+      OriginShield?: {
+        Enabled: boolean // Required
+        OriginShieldRegion?: string
+      }
     }>
   }
-  OriginGroups: {
-    Quantity: number
+  OriginGroups?: {
+    Quantity: number // Required
+    Items?: Array<{
+      Id: string // Required
+      FailoverCriteria: {
+        // Required
+        StatusCodes: {
+          Quantity: number // Required
+          Items: number[] // Required
+        }
+      }
+      Members: {
+        // Required
+        Quantity: number // Required
+        Items: Array<{
+          OriginId: string // Required
+        }>
+      }
+    }>
   }
   DefaultCacheBehavior: {
-    TargetOriginId: string
-    TrustedSigners: {
-      Enabled: boolean
-      Quantity: number
+    // Required
+    TargetOriginId: string // Required
+    TrustedSigners?: {
+      Enabled: boolean // Required
+      Quantity: number // Required
+      Items?: string[]
     }
-    TrustedKeyGroups: {
-      Enabled: boolean
-      Quantity: number
+    TrustedKeyGroups?: {
+      Enabled: boolean // Required
+      Quantity: number // Required
+      Items?: string[]
     }
-    ViewerProtocolPolicy: string
-    AllowedMethods: {
-      Quantity: number
-      Items: string[]
-      CachedMethods: {
-        Quantity: number
-        Items: string[]
+    ViewerProtocolPolicy: 'allow-all' | 'https-only' | 'redirect-to-https' // Required
+    AllowedMethods?: {
+      Quantity: number // Required
+      Items: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'OPTIONS' | 'DELETE'> // Required
+      CachedMethods?: {
+        Quantity: number // Required
+        Items: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'OPTIONS' | 'DELETE'> // Required
       }
     }
-    SmoothStreaming: boolean
-    Compress: boolean
-    LambdaFunctionAssociations: {
-      Quantity: number
+    SmoothStreaming?: boolean
+    Compress?: boolean
+    LambdaFunctionAssociations?: {
+      Quantity: number // Required
+      Items?: Array<{
+        LambdaFunctionARN: string // Required
+        EventType: 'viewer-request' | 'viewer-response' | 'origin-request' | 'origin-response' // Required
+        IncludeBody?: boolean
+      }>
     }
-    FunctionAssociations: {
-      Quantity: number
-    }
-    FieldLevelEncryptionId: string
-    ForwardedValues: {
-      QueryString: boolean
+    FieldLevelEncryptionId?: string
+    RealtimeLogConfigArn?: string
+    CachePolicyId?: string
+    OriginRequestPolicyId?: string
+    ForwardedValues?: {
+      QueryString: boolean // Required
       Cookies: {
-        Forward: string
+        // Required
+        Forward: 'none' | 'whitelist' | 'all' // Required
+        WhitelistedNames?: {
+          Quantity: number // Required
+          Items?: string[]
+        }
       }
-      Headers: {
-        Quantity: number
+      Headers?: {
+        Quantity: number // Required
+        Items?: string[]
       }
-      QueryStringCacheKeys: {
-        Quantity: number
+      QueryStringCacheKeys?: {
+        Quantity: number // Required
+        Items?: string[]
       }
     }
-    MinTTL: number
-    DefaultTTL: number
-    MaxTTL: number
+    MinTTL?: number
+    DefaultTTL?: number
+    MaxTTL?: number
   }
-  CacheBehaviors: {
-    Quantity: number
+  CacheBehaviors?: {
+    Quantity: number // Required
+    Items?: Array<{
+      PathPattern: string // Required
+      TargetOriginId: string // Required
+      TrustedSigners?: {
+        Enabled: boolean // Required
+        Quantity: number // Required
+        Items?: string[]
+      }
+      TrustedKeyGroups?: {
+        Enabled: boolean // Required
+        Quantity: number // Required
+        Items?: string[]
+      }
+      ViewerProtocolPolicy: 'allow-all' | 'https-only' | 'redirect-to-https' // Required
+      AllowedMethods?: {
+        Quantity: number // Required
+        Items: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'OPTIONS' | 'DELETE'> // Required
+        CachedMethods?: {
+          Quantity: number // Required
+          Items: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'OPTIONS' | 'DELETE'> // Required
+        }
+      }
+      SmoothStreaming?: boolean
+      Compress?: boolean
+      LambdaFunctionAssociations?: {
+        Quantity: number // Required
+        Items?: Array<{
+          LambdaFunctionARN: string // Required
+          EventType: 'viewer-request' | 'viewer-response' | 'origin-request' | 'origin-response' // Required
+          IncludeBody?: boolean
+        }>
+      }
+      FieldLevelEncryptionId?: string
+      RealtimeLogConfigArn?: string
+      CachePolicyId?: string
+      OriginRequestPolicyId?: string
+      ForwardedValues?: {
+        QueryString: boolean // Required
+        Cookies: {
+          // Required
+          Forward: 'none' | 'whitelist' | 'all' // Required
+          WhitelistedNames?: {
+            Quantity: number // Required
+            Items?: string[]
+          }
+        }
+        Headers?: {
+          Quantity: number // Required
+          Items?: string[]
+        }
+        QueryStringCacheKeys?: {
+          Quantity: number // Required
+          Items?: string[]
+        }
+      }
+      MinTTL?: number
+      DefaultTTL?: number
+      MaxTTL?: number
+    }>
   }
-  CustomErrorResponses: {
-    Quantity: number
+  CustomErrorResponses?: {
+    Quantity: number // Required
+    Items?: Array<{
+      ErrorCode: number // Required
+      ResponsePagePath?: string
+      ResponseCode?: string
+      ErrorCachingMinTTL?: number
+    }>
   }
-  Comment: string
-  Logging: {
-    Enabled: boolean
-    IncludeCookies: boolean
-    Bucket: string
-    Prefix: string
+  Comment: string // Required
+  Logging?: {
+    Enabled: boolean // Required
+    IncludeCookies: boolean // Required
+    Bucket: string // Required
+    Prefix: string // Required
   }
-  PriceClass: string
-  Enabled: boolean
-  ViewerCertificate: {
-    CloudFrontDefaultCertificate: boolean
-    SSLSupportMethod: string
-    MinimumProtocolVersion: string
-    CertificateSource: string
+  PriceClass?: 'PriceClass_100' | 'PriceClass_200' | 'PriceClass_All'
+  Enabled: boolean // Required
+  ViewerCertificate?: {
+    CloudFrontDefaultCertificate?: boolean
+    IAMCertificateId?: string
+    ACMCertificateArn?: string
+    SSLSupportMethod?: 'sni-only' | 'vip' | 'static-ip'
+    MinimumProtocolVersion?: 'SSLv3' | 'TLSv1' | 'TLSv1_2016' | 'TLSv1.1_2016' | 'TLSv1.2_2018' | 'TLSv1.2_2019'
+    Certificate?: string
+    CertificateSource?: 'cloudfront' | 'iam' | 'acm'
   }
-  Restrictions: {
+  Restrictions?: {
     GeoRestriction: {
-      RestrictionType: string
-      Quantity: number
+      RestrictionType: 'blacklist' | 'whitelist' | 'none' // Required
+      Quantity: number // Required
+      Items?: string[]
     }
   }
-  WebACLId: string
-  HttpVersion: string
-  IsIPV6Enabled: boolean
-  ContinuousDeploymentPolicyId: string
-  Staging: boolean
+  WebACLId?: string
+  HttpVersion?: 'http1.1' | 'http2'
+  IsIPV6Enabled?: boolean
 }
 
 export interface GetFilesResponse {

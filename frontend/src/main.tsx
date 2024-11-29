@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Link, Outlet, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import './index.css'
 import Root from '@/routes/Root'
 import CreateWorkspace from './routes/CreateWorkspace'
@@ -8,7 +8,6 @@ import CreateStaticWebsite from './routes/CreateStaticWebsite'
 import WorkspaceList from './routes/WorkspaceList'
 import ProjectList from './routes/ProjectList'
 import ProjectPage from './routes/ProjectPage'
-import { Button } from './components/ui/button'
 import UploadFiles from './routes/UploadFiles'
 import ProjectDetails from './routes/ProjectDetails'
 import { ProjectConfiguration } from './routes/ProjectConfiguration'
@@ -19,26 +18,29 @@ import Login from './routes/Login'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import { WorkspaceSettings } from './routes/WorkspaceSettings'
+import { ProtectedRoutes } from './components/shared/ProtectedRoutes'
+import { PublicRoutes } from './components/shared/PublicRoutes'
+import { ErrorPage } from './routes/ErrorPage'
+import { LandingPage } from './routes/LandingPage'
 
 export const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: (
-      <div className='p-6'>
-        Landing page
-        <div className='mt-2'>
-          <Link to='/auth'>
-            <Button>Login</Button>
-          </Link>
-        </div>
-      </div>
-    )
+    index: true,
+    element: <LandingPage />
+  },
+  {
+    path: '*',
+    element: <ErrorPage />
   },
   {
     path: '/auth',
-    element: <Auth />,
+    element: (
+      <PublicRoutes>
+        <Auth />
+      </PublicRoutes>
+    ),
     children: [
       {
         index: true,
@@ -52,7 +54,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/workspace',
-    element: <Root />,
+    element: (
+      <ProtectedRoutes>
+        <Root />
+      </ProtectedRoutes>
+    ),
     children: [
       {
         index: true,
@@ -110,6 +116,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+
       <Toaster position='top-right' richColors theme='light' toastOptions={{ duration: 2500 }} />
     </QueryClientProvider>
   </StrictMode>

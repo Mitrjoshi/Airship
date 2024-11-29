@@ -13,7 +13,6 @@ import {
   GetObjectCommand,
   PutBucketCorsCommand,
   ListObjectsV2Command,
-  ListObjectsV2Output,
   _Object,
   DeleteObjectsCommand,
   DeleteBucketCommand,
@@ -227,6 +226,23 @@ const createCloudFrontDistribution = async (
         DefaultTTL: 0,
         MaxTTL: 0,
       },
+      CustomErrorResponses: {
+        Quantity: 2,
+        Items: [
+          {
+            ErrorCode: 403,
+            ResponsePagePath: "/index.html",
+            ResponseCode: "200",
+            ErrorCachingMinTTL: 0,
+          },
+          {
+            ErrorCode: 404,
+            ResponsePagePath: "/index.html",
+            ResponseCode: "200",
+            ErrorCachingMinTTL: 0,
+          },
+        ],
+      },
       Comment: "S3 static website with CloudFront HTTPS",
       Enabled: true,
     },
@@ -388,6 +404,7 @@ export const getCloudfrontStatus = async (
     throw error;
   }
 };
+
 export const fetchCloudFrontSettings = async (
   workspaceId: string,
   distributionId: string,
