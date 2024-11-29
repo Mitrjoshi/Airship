@@ -11,16 +11,12 @@ export default function ProjectPage() {
   const { projectId } = useParams()
   const navigate = useNavigate()
 
-  const {
-    data: projectData,
-    refetch: refetchProjectData,
-    isRefetching: isProjectDataLoading
-  } = useGetSingleProject(projectId as string)
+  const { refetch: refetchProjectData, isRefetching: isProjectDataLoading } = useGetSingleProject(projectId as string)
 
   return (
     <PageContainer>
       <TitleHeader
-        title={projectData?.data?.name || 'Project Name'}
+        title={'Latest deployment'}
         showBackBtn
         element={
           <div className='flex items-center gap-2'>

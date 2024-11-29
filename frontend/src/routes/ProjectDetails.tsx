@@ -5,6 +5,8 @@ import { checkStatusResponse, DeploymentsResponse, getProjectsResponse } from '@
 import { formatDate } from '@/utils/utils'
 import { useParams } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Calendar, CloudIcon, Copy, Cylinder, Globe, Link, MessageSquareText, UserRound } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ProjectDetails() {
   const { projectId } = useParams()
@@ -79,22 +81,13 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
   return (
     projectData && (
       <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
-        <div className='aspect-video h-auto w-full max-w-md rounded-lg bg-secondary' />
-
-        <ul className='relative space-y-4 text-sm'>
-          <li>
-            <p className='text-muted-foreground'>Bucket name</p>
-            <p>{projectData?.bucket_name}</p>
-          </li>
-          <li>
-            <p className='text-muted-foreground'>Deployment URL</p>
-            <a href={projectData?.cloudfront_url} target='_blank' className='text-blue-400 underline'>
-              {projectData?.cloudfront_url}
-            </a>
-          </li>
-          <li className='flex gap-6'>
-            <div>
-              <p className='text-muted-foreground'>Status</p>
+        <div className='flex w-full items-start justify-between gap-10 text-sm'>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-4 font-medium text-muted-foreground'>
+              <div className='flex items-center gap-1.5'>
+                <Globe size={16} />
+                <p>Static website</p>
+              </div>
               <p className='flex items-center gap-1.5'>
                 {status === 'Failed' && (
                   <>
@@ -112,35 +105,73 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
 
                 {status === 'Deployed' && (
                   <>
-                    <span className='h-2.5 w-2.5 rounded-full bg-green-500'></span>
-                    <span>Ready</span>
+                    <span className='h-2.5 w-2.5 animate-pulse rounded-full bg-green-500'></span>
+                    <span>Live</span>
                   </>
                 )}
               </p>
             </div>
-            {deploymentData && (
-              <div>
-                <p className='text-muted-foreground'>Deployed</p>
-                <p>
-                  at {formatDate(deploymentData?.created_at as Date)} by{' '}
-                  <span className='cursor-pointer font-semibold duration-150'>@{deploymentData?.users.username}</span>
-                </p>
-              </div>
-            )}
-          </li>
-          {deploymentData && (
-            <>
-              <li>
-                <p className='text-muted-foreground'>Deployment ID</p>
-                <p>{deploymentData?.id}</p>
-              </li>
-              <li>
-                <p className='text-muted-foreground'>Deployment message</p>
-                <p>{deploymentData?.deployment_msg}</p>
-              </li>
-            </>
-          )}
-        </ul>
+
+            <h1 className='text-4xl font-medium'>{projectData.name}</h1>
+
+            <p className='text-muted-foreground'>
+              <span className='font-medium'>{projectData.description}</span>
+            </p>
+
+            <div className='flex items-center gap-1.5 text-muted-foreground'>
+              <Link size={16} className='shrink-0' />
+              <a rel='noreferrer' target='_blank' className='text-blue-500 underline' href={projectData.cloudfront_url}>
+                {projectData.cloudfront_url}
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(projectData.cloudfront_url)
+                  toast.success('Copied to clipboard')
+                }}
+              >
+                <Copy size={16} className='shrink-0' />
+              </button>
+            </div>
+
+            <div className='flex items-center gap-1.5 text-muted-foreground'>
+              <MessageSquareText size={16} className='shrink-0' />
+              <p>{deploymentData.deployment_msg}</p>
+            </div>
+          </div>
+
+          <div className='space-y-4 whitespace-nowrap'>
+            <p className='flex items-center gap-1.5 text-muted-foreground'>
+              <UserRound size={16} />
+              Deployed by <span className='font-medium underline'>@{deploymentData.users.username}</span>
+            </p>
+            <p className='flex items-center gap-1.5 text-muted-foreground'>
+              <Calendar size={16} />
+              Deployed at
+              <span className='font-medium'>{formatDate(deploymentData.created_at)}</span>
+            </p>
+
+            <p className='flex items-center gap-1.5 text-muted-foreground'>
+              <Cylinder size={16} />
+              Bucket:{' '}
+              <span className='font-medium underline'>
+                <a href={`https://s3.console.aws.amazon.com/s3/buckets/${projectData.bucket_name}`}>
+                  {projectData.bucket_name}
+                </a>
+              </span>
+            </p>
+            <p className='flex items-center gap-1.5 text-muted-foreground'>
+              <CloudIcon size={16} />
+              Cloudfront:{' '}
+              <span className='font-medium underline'>
+                <a
+                  href={`https://console.aws.amazon.com/cloudfront/home?region=us-east-1#/distributions/${projectData.distribution_id}`}
+                >
+                  {projectData.distribution_id}
+                </a>
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     )
   )

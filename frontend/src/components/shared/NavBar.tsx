@@ -8,10 +8,11 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { useTheme } from '../themes/ThemeProvider'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function NavBar() {
   const { setTheme, theme } = useTheme()
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   const [isRotating, setIsRotating] = useState(false)
 
   const handleThemeSwitch = () => {
@@ -19,8 +20,14 @@ export default function NavBar() {
     setTimeout(() => {
       setTheme(theme === 'dark' ? 'light' : 'dark')
       setIsRotating(false)
-    }, 300) // Match this duration to the CSS animation time
+    }, 300)
   }
+
+  useEffect(() => {
+    if (systemTheme && theme == systemTheme) {
+      setTheme(systemTheme)
+    }
+  }, [systemTheme, theme])
 
   return (
     <nav className='flex h-14 items-center justify-between border-b p-4'>

@@ -69,7 +69,7 @@ function DeploymentDropdown() {
         <DropdownMenuGroup>
           <Link to='create-static-website'>
             <DropdownMenuItem>
-              <GlobeAltIcon strokeWidth={2} />
+              <GlobeAltIcon />
               <span>Static Website</span>
             </DropdownMenuItem>
           </Link>
@@ -78,11 +78,11 @@ function DeploymentDropdown() {
             <span>Lambda Function</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <ServerStackIcon strokeWidth={2} />
+            <ServerStackIcon />
             <span>Elastic Compute Cloud</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <CloudIcon strokeWidth={2} />
+            <CloudIcon />
             <span>Content Delivery Network</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
