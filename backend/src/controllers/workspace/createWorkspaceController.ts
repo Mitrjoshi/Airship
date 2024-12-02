@@ -12,6 +12,8 @@ export const createWorkspaceController = async (
     const INSERT_DATA = await createWorkspace({
       ...req.body,
       created_by: req.user?.id!,
+      access_key: req.body.access_key || process.env.AWS_ACCESS_KEY,
+      secret_key: req.body.secret_key || process.env.AWS_SECRET_KEY,
     });
 
     const NEW_INSERT_DATA = {

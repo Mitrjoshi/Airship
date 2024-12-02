@@ -1,8 +1,8 @@
 import { CachingBehaviorSettings } from '@/components/projects/staticWebsite/CachingBehaviorSettings'
+import { DomainSettings } from '@/components/projects/staticWebsite/DomainSettings'
 import { ErrorPagesSettings } from '@/components/projects/staticWebsite/ErrorPagesSettings'
 import { GeneralSettings } from '@/components/projects/staticWebsite/GeneralSettings'
 import { InvalidationSettings } from '@/components/projects/staticWebsite/InvalidationSettings'
-import { Button } from '@/components/ui/button'
 import { useGetSingleProject } from '@/services/useGetSingleProject'
 import { getProjectsResponse } from '@/types/response'
 import { useState } from 'react'
@@ -15,7 +15,7 @@ export const ProjectConfiguration = () => {
   const { data: projectData, isRefetching } = useGetSingleProject(projectId as string)
 
   //state
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(1)
 
   const ARRAY = [
     {
@@ -58,26 +58,7 @@ export const ProjectConfiguration = () => {
             <GeneralSettings isRefetching={isRefetching} projectData={projectData?.data as getProjectsResponse} />
           )}
 
-          {currentIndex === 1 && (
-            <>
-              <div className='space-y-4 p-4'>
-                <h1 className='text-lg font-semibold'>Domains</h1>
-                <p className='text-sm text-muted-foreground'>
-                  These domains are assigned to your Production Deployments. Optionally, a different Git branch or a
-                  redirection to another domain can be configured for each one.
-                </p>
-                <div className='border p-4'>
-                  <p>{projectData?.data?.cloudfront_url}</p>
-                </div>
-                <div className='flex w-full justify-end gap-2'>
-                  <Button variant={'outline'} size={'sm'}>
-                    Add domain
-                  </Button>
-                  <Button size={'sm'}>Save</Button>
-                </div>
-              </div>
-            </>
-          )}
+          {currentIndex === 1 && <DomainSettings projectData={projectData?.data as getProjectsResponse} />}
 
           {currentIndex === 2 && <InvalidationSettings projectData={projectData?.data as getProjectsResponse} />}
 

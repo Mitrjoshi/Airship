@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ServerRoutes } from '@/constants'
 import { toast } from 'sonner'
 import { AxiosError } from 'axios'
+import { queryClient } from '@/main'
 
 const createProject = async (data: CreateProjectRequest): Promise<ApiResponse> => {
   const response = await apiClient.post(`${ServerRoutes.projects.index}/create`, data)
@@ -25,6 +26,10 @@ export const useCreateProject = () => {
           replace: true
         })
       }
+
+      queryClient.invalidateQueries({
+        queryKey: ['GET_PROJECTS']
+      })
     },
     onError: (error: AxiosError<ApiResponse>) => {
       toast.error(error?.response?.data?.message || 'Unexpected error occurred.')

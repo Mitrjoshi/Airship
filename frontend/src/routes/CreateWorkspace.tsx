@@ -4,37 +4,45 @@ import TitleHeader from '@/components/shared/TitleHeader'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { useCreateWorkspace } from '@/services/useCreateWorkspace'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const CreateWorkspace = () => {
-  const formSchema = z.object({
-    workspace_name: z.string().min(2, {
-      message: 'Workspace name must be at least 2 characters.'
-    }),
-    workspace_description: z.string().optional(),
-    workspace_access_key: z
-      .string()
-      .min(20, {
-        message: 'Access key must be length of 20.'
-      })
-      .max(20),
-    workspace_secret_key: z
-      .string()
-      .min(40, {
-        message: 'Secret access key must be length of 40.'
-      })
-      .max(40),
-    agree: z
-      .boolean({
-        message: 'Please agree to the Terms and Conditions.'
-      })
-      .refine((val) => val === true, {
-        message: 'You must agree to proceed.'
-      })
-  })
+  const [haveAccessKey, setHaveAccessKey] = useState(false)
+
+  const createSchema = (hasAccessKey: boolean) =>
+    z.object({
+      workspace_name: z.string().min(2, {
+        message: 'Workspace name must be at least 2 characters.'
+      }),
+      workspace_description: z.string().optional(),
+      ...(hasAccessKey
+        ? {
+            workspace_access_key: z
+              .string()
+              .min(20, 'Access key must be exactly 20 characters.')
+              .max(20, 'Access key must be exactly 20 characters.'),
+            workspace_secret_key: z
+              .string()
+              .min(40, 'Secret key must be exactly 40 characters.')
+              .max(40, 'Secret key must be exactly 40 characters.'),
+            agree: z
+              .boolean({
+                message: 'Please agree to the Terms and Conditions.'
+              })
+              .refine((val) => val === true, {
+                message: 'You must agree to securely share your credentials.'
+              })
+          }
+        : {})
+    })
+
+  const formSchema = useMemo(() => createSchema(haveAccessKey), [haveAccessKey])
 
   const { mutate, isPending } = useCreateWorkspace()
 
@@ -45,9 +53,9 @@ const CreateWorkspace = () => {
       workspace_description: '',
       workspace_access_key: '',
       workspace_secret_key: '',
-      agree: false // Default agree to false
+      agree: false
     },
-    mode: 'onChange' // Validates form on each change
+    mode: 'onChange'
   })
 
   const { isValid } = form.formState
@@ -56,10 +64,9 @@ const CreateWorkspace = () => {
     mutate({
       name: values.workspace_name,
       description: values.workspace_description,
-      created_by: '123',
       company_name: values.workspace_name,
-      access_key: values.workspace_access_key,
-      secret_key: values.workspace_secret_key
+      access_key: values.workspace_access_key as string,
+      secret_key: values.workspace_secret_key as string
     })
   }
 
@@ -94,51 +101,68 @@ const CreateWorkspace = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='workspace_access_key'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Access Key</FormLabel>
-                <FormControl>
-                  <Input placeholder='Your AWS Access Key' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name='workspace_secret_key'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Secret Access Key</FormLabel>
-                <FormControl>
-                  <Input placeholder='Your AWS Secret Access Key' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='flex items-center justify-between gap-4 rounded-lg border p-4'>
+            <Label htmlFor='have-keys' className='text-sm'>
+              <p className='mb-1.5 font-medium'>Do you have AWS credentials?</p>
+              <p className='text-muted-foreground'>
+                If AWS keys are provided, your account will be used; otherwise, the default setup will handle AWS
+                operations.
+              </p>
+            </Label>
 
-          <FormField
-            control={form.control}
-            name='agree'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-                <div className='space-y-1 leading-none'>
-                  <FormLabel>I agree to securely share my credentials.</FormLabel>
-                  <FormDescription>
-                    Your credentials will be protected with the utmost security measures.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
+            <Switch checked={haveAccessKey} id='have-keys' onCheckedChange={() => setHaveAccessKey(!haveAccessKey)} />
+          </div>
+
+          {haveAccessKey && (
+            <>
+              <FormField
+                control={form.control}
+                name='workspace_access_key'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Access Key</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Your AWS Access Key' {...field} value={field.value as string} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='workspace_secret_key'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Secret Access Key</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Your AWS Secret Access Key' {...field} value={field.value as string} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='agree'
+                render={({ field }) => (
+                  <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
+                    <FormControl>
+                      <Checkbox checked={field.value as boolean} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div className='space-y-1 leading-none'>
+                      <FormLabel>I agree to securely share my credentials.</FormLabel>
+                      <FormDescription>
+                        Your credentials will be protected with the utmost security measures.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
 
           <LoadingButton className='w-full' type='submit' disabled={!isValid} isLoading={isPending}>
             Create Workspace
