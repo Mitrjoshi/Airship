@@ -22,6 +22,7 @@ import { ProtectedRoutes } from './components/shared/ProtectedRoutes'
 import { PublicRoutes } from './components/shared/PublicRoutes'
 import { ErrorPage } from './routes/ErrorPage'
 import { LandingPage } from './routes/LandingPage'
+import CreateLambdaFunction from './routes/CreateLambdaFunction'
 
 export const queryClient = new QueryClient()
 
@@ -105,6 +106,10 @@ const router = createBrowserRouter([
           {
             path: 'create-static-website',
             element: <CreateStaticWebsite />
+          },
+          {
+            path: 'create-lambda-function',
+            element: <CreateLambdaFunction />
           }
         ]
       }

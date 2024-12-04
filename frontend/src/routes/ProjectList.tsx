@@ -73,10 +73,12 @@ function DeploymentDropdown() {
               <span>Static Website</span>
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem>
-            <img className='size-4 mix-blend-difference invert' src='/lambda.png' alt='' />
-            <span>Lambda Function</span>
-          </DropdownMenuItem>
+          <Link to='create-lambda-function'>
+            <DropdownMenuItem>
+              <img className='size-4 mix-blend-difference invert' src='/lambda.png' alt='' />
+              <span>Lambda Function</span>
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>
             <ServerStackIcon />
             <span>Elastic Compute Cloud</span>

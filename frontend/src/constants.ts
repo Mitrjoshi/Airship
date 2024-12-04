@@ -93,3 +93,39 @@ export const AWS_REGIONS = [
     regions: [{ code: 'af-south-1', city: 'Cape Town' }]
   }
 ]
+
+export const AWS_LAMBDA_RUNTIMES = [
+  {
+    language: 'Node.js',
+    versions: [
+      { runtime: 'nodejs18.x', description: 'Node.js 18.x' },
+      { runtime: 'nodejs16.x', description: 'Node.js 16.x' }
+    ]
+  },
+  {
+    language: 'Python',
+    versions: [{ runtime: 'python3.9', description: 'Python 3.9' }]
+  },
+  {
+    language: 'Java',
+    versions: [
+      { runtime: 'java11', description: 'Java 11' },
+      { runtime: 'java8.al2', description: 'Java 8 (Amazon Linux 2)' }
+    ]
+  },
+  {
+    language: 'Go',
+    versions: [{ runtime: 'go1.x', description: 'Go 1.x' }]
+  },
+  {
+    language: 'C# (.NET)',
+    versions: [{ runtime: 'dotnet6', description: '.NET 6' }]
+  },
+  {
+    language: 'Custom',
+    versions: [
+      { runtime: 'provided', description: 'Custom Runtime' },
+      { runtime: 'provided.al2', description: 'Custom Runtime (Amazon Linux 2)' }
+    ]
+  }
+]

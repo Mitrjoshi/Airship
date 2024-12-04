@@ -11,7 +11,6 @@ export interface CreateProjectRequest {
   bucket_name: string
   description?: string
   type: 'static-website' | 'lambda' | 'ec2'
-  created_by: string
   workspace_id: string
   region: string
   environment: 'staging' | 'production'
