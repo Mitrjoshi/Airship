@@ -9,6 +9,8 @@ export const getProjectsController = async (req: Request, res: Response) => {
     //Fetch project details
     const projects = await getProjects(workspaceId);
 
+    console.log(projects);
+
     res
       .status(200)
       .json(createResponse(true, "Projects retrieved successfully", projects));

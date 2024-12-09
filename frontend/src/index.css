@@ -96,6 +96,15 @@
   }
 }
 
+@keyframes wave {
+  50% {
+    opacity: 0.3;
+  }
+}
+.animate-wave {
+  animation: wave 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .icon-wrapper {
   display: inline-block;
   transition: transform 0.3s ease-in-out;

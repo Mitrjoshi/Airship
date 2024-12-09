@@ -42,7 +42,7 @@ export default function ProjectDetails() {
               <TableBody>
                 {deploymentData?.data?.map((deployment, index) => (
                   <>
-                    <TableRow>
+                    <TableRow className='h-[50px]'>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className='flex items-center justify-start gap-2'>
                         <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-400 text-lg font-medium'>
@@ -99,7 +99,19 @@ function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps
                 {status === 'InProgress' && (
                   <>
                     <span className='h-2.5 w-2.5 rounded-full bg-yellow-500'></span>
-                    <span>Deploying, this may take a few minutes.</span>
+                    <span>
+                      {['D', 'e', 'p', 'l', 'o', 'y', 'i', 'n', 'g', '.', '.', '.'].map((item, i) => (
+                        <span
+                          className={`animate-wave`}
+                          key={i}
+                          style={{
+                            animationDelay: `${i * 100}ms`
+                          }}
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </span>
                   </>
                 )}
 

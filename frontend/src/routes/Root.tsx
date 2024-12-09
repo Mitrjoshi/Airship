@@ -4,7 +4,7 @@ import NavBar from '@/components/shared/NavBar'
 
 export default function Root() {
   return (
-    <ThemeProvider defaultTheme='system' storageKey='vite-ui-theme'>
+    <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
       <NavBar />
       <Outlet />
     </ThemeProvider>

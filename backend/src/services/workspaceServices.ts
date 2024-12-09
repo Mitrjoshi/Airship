@@ -52,9 +52,7 @@ export const getWorkspaces = async (userId: string) => {
 export const getWorkspaceById = async (workspaceId: string) => {
   const { data: workspaceData, error } = await supabase
     .from("workspaces")
-    .select(
-      "*, projects ( id, name, type, created_at, description, environment, users ( id, username ) )"
-    )
+    .select("*, projects ( * , users ( id, username ) )")
     .eq("id", workspaceId)
     .maybeSingle();
 

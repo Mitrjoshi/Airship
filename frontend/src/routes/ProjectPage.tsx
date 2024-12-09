@@ -16,7 +16,6 @@ export default function ProjectPage() {
     <PageContainer>
       <TitleHeader
         title={'Latest deployment'}
-        showBackBtn
         element={
           <div className='flex items-center gap-2'>
             <LoadingButton

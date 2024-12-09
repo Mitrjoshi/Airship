@@ -72,7 +72,7 @@ const CreateWorkspace = () => {
 
   return (
     <FormPageContainer>
-      <TitleHeader title='Create Workspace' showBackBtn />
+      <TitleHeader title='Create Workspace' />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           <FormField

@@ -1,5 +1,5 @@
 import TitleHeader from '@/components/shared/TitleHeader'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/utils/utils'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
@@ -17,17 +17,42 @@ import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/ou
 import PageContainer from '@/components/shared/PageContainer'
 import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
 import { SettingsIcon } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useState } from 'react'
 
 export default function ProjectList() {
+  const [selectedItems, setSelectedItems] = useState<object[]>([])
   const { workspaceId } = useParams()
+  const navigate = useNavigate()
 
   const { data: workspaceData } = useGetWorkspaceDetails(workspaceId as string)
+
+  const isAllSelected =
+    workspaceData?.data?.projects.length && selectedItems.length === workspaceData?.data?.projects.length
+
+  const toggleRowSelection = (item: object) => {
+    setSelectedItems((prev) => {
+      if (prev.includes(item)) {
+        return prev.filter((selected) => selected !== item)
+      } else {
+        return [...prev, item]
+      }
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedItems([])
+    } else {
+      setSelectedItems(workspaceData?.data?.projects || [])
+    }
+  }
 
   return (
     <PageContainer>
       <TitleHeader
         title={workspaceData?.data?.name || 'Workspace Name'}
-        showBackBtn
         element={
           <div className='flex items-center gap-2'>
             <Link to='settings'>
@@ -40,8 +65,45 @@ export default function ProjectList() {
           </div>
         }
       />
-      <div className='grid grid-cols-3 gap-6'>
-        {workspaceData?.data?.projects?.map((project) => (
+
+      <Table>
+        <TableHeader>
+          <TableRow className='font-medium'>
+            <TableHead>
+              <Checkbox checked={!!isAllSelected} onCheckedChange={toggleSelectAll} aria-label='Select All' />
+            </TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Created by</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Region</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {workspaceData?.data?.projects?.map((project, index) => (
+            <TableRow className='h-[50px]' onClick={() => navigate(project.id)}>
+              <TableCell>
+                <Checkbox
+                  onClick={(e) => e.stopPropagation()}
+                  checked={selectedItems.includes(project)}
+                  onCheckedChange={() => toggleRowSelection(project)}
+                  aria-label={`Select Row ${index}`}
+                />
+              </TableCell>
+              <TableCell>{project.name}</TableCell>
+              <TableCell>{project.description || 'No description available'}</TableCell>
+              <TableCell>{project.type}</TableCell>
+              <TableCell>@{project.users.username}</TableCell>
+              <TableCell>Active</TableCell>
+              <TableCell>{project.region}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* {workspaceData?.data?.projects.length ? (
+        workspaceData?.data?.projects?.map((project) => (
           <ProjectCard
             key={project.id}
             name={project.name}
@@ -49,8 +111,13 @@ export default function ProjectList() {
             created_at={project.created_at}
             link={project.id}
           />
-        ))}
-      </div>
+        ))
+      ) : (
+        <div className='mt-[20%] flex flex-col items-center justify-center'>
+          <img className='size-24 invert' src='/empty-folder.png' />
+          No data available to display.
+        </div>
+      )} */}
     </PageContainer>
   )
 }

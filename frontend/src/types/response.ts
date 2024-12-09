@@ -23,6 +23,7 @@ export interface getProjectsResponse {
   bucket_name: string
   distribution_id: string
   cloudfront_url: string
+  type: 'static-website' | 'lambda' | 'ec2'
   region: string
   cloudfrontConfig: CloudFrontDistributionConfig
   status: checkStatusResponse

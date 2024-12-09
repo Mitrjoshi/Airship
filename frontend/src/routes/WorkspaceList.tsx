@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { formatDate } from '@/utils/utils'
 import PageContainer from '@/components/shared/PageContainer'
 import TitleHeader from '@/components/shared/TitleHeader'
-import { PersonIcon, PlusIcon } from '@radix-ui/react-icons'
+import { CalendarIcon, PersonIcon, PlusIcon } from '@radix-ui/react-icons'
+import { ChevronRight } from 'lucide-react'
 
 export default function WorkspaceList() {
   const { data: workspaces } = useGetWorkspaces()
@@ -35,12 +36,21 @@ interface WorkspaceCardProps {
 }
 function WorkspaceCard({ name, description, created_at, link }: WorkspaceCardProps) {
   return (
-    <Link to={link} className='flex h-40 flex-col justify-between rounded-lg border bg-secondary p-4'>
+    <Link
+      to={link}
+      className='group flex h-36 flex-col justify-between rounded-lg border p-4 duration-200 hover:border-gray-600 hover:bg-gray-900/50'
+    >
       <div>
-        <h3 className='mb-2 font-medium'>{name}</h3>
+        <div className='mb-2 flex items-center justify-between'>
+          <h3 className='font-medium'>{name}</h3>
+          <ChevronRight className='size-5 text-muted-foreground transition-all duration-200 group-hover:translate-x-1 group-hover:scale-110 group-hover:text-primary' />
+        </div>
         <p className='text-sm text-muted-foreground'>{description || 'No description provided.'}</p>
       </div>
-      <span className='text-xs text-muted-foreground'>{formatDate(created_at)}</span>
+      <div className='flex items-center text-muted-foreground'>
+        <CalendarIcon className='mr-2 size-4' />
+        <span className='text-xs'>{formatDate(created_at)}</span>
+      </div>
     </Link>
   )
 }
