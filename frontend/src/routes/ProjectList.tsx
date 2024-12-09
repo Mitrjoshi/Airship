@@ -1,7 +1,6 @@
 import TitleHeader from '@/components/shared/TitleHeader'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/utils/utils'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 
 import {
@@ -16,7 +15,7 @@ import {
 import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/outline'
 import PageContainer from '@/components/shared/PageContainer'
 import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
-import { SettingsIcon } from 'lucide-react'
+import { MoveDown, EllipsisIcon, SettingsIcon, Globe } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useState } from 'react'
@@ -68,16 +67,23 @@ export default function ProjectList() {
 
       <Table>
         <TableHeader>
-          <TableRow className='font-medium'>
+          <TableRow className='font-medium hover:cursor-pointer'>
             <TableHead>
               <Checkbox checked={!!isAllSelected} onCheckedChange={toggleSelectAll} aria-label='Select All' />
             </TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead className='flex items-center justify-between'>
+              <p>Name</p>
+              <MoveDown className='size-4' />
+            </TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Type</TableHead>
-            <TableHead>Created by</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className='flex items-center justify-between'>
+              Created by
+              <MoveDown className='size-4' />
+            </TableHead>
+            <TableHead className='max-w-32'>Status</TableHead>
             <TableHead>Region</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -91,33 +97,26 @@ export default function ProjectList() {
                   aria-label={`Select Row ${index}`}
                 />
               </TableCell>
-              <TableCell>{project.name}</TableCell>
+              <TableCell>
+                <div className='flex items-center gap-2'>
+                  <Globe className='size-4' />
+                  {project.name}
+                </div>
+              </TableCell>
               <TableCell>{project.description || 'No description available'}</TableCell>
               <TableCell>{project.type}</TableCell>
               <TableCell>@{project.users.username}</TableCell>
-              <TableCell>Active</TableCell>
+              <TableCell className='max-w-32 text-green-400'>Active</TableCell>
               <TableCell>{project.region}</TableCell>
+              <TableCell className='w-10'>
+                <Button onClick={(e) => e.stopPropagation()} variant={'ghost'} size={'icon'}>
+                  <EllipsisIcon />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      {/* {workspaceData?.data?.projects.length ? (
-        workspaceData?.data?.projects?.map((project) => (
-          <ProjectCard
-            key={project.id}
-            name={project.name}
-            description={project.description}
-            created_at={project.created_at}
-            link={project.id}
-          />
-        ))
-      ) : (
-        <div className='mt-[20%] flex flex-col items-center justify-center'>
-          <img className='size-24 invert' src='/empty-folder.png' />
-          No data available to display.
-        </div>
-      )} */}
     </PageContainer>
   )
 }
@@ -157,23 +156,5 @@ function DeploymentDropdown() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
-
-interface ProjectCardProps {
-  name: string
-  description: string | null
-  created_at: Date
-  link: string
-}
-function ProjectCard({ name, description, created_at, link }: ProjectCardProps) {
-  return (
-    <Link to={link} className='flex h-40 flex-col justify-between rounded-lg border bg-secondary p-4'>
-      <div>
-        <h3 className='mb-2 font-medium'>{name}</h3>
-        <p className='text-sm text-muted-foreground'>{description || 'No description provided.'}</p>
-      </div>
-      <span className='text-xs text-muted-foreground'>{formatDate(created_at)}</span>
-    </Link>
   )
 }
