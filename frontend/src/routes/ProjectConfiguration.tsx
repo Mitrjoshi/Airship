@@ -15,7 +15,7 @@ export const ProjectConfiguration = () => {
   const { data: projectData, isRefetching } = useGetSingleProject(projectId as string)
 
   //state
-  const [currentIndex, setCurrentIndex] = useState(1)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   const ARRAY = [
     {

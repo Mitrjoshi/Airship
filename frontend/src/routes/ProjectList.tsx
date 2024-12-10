@@ -15,10 +15,11 @@ import {
 import { CloudIcon, GlobeAltIcon, ServerStackIcon } from '@heroicons/react/24/outline'
 import PageContainer from '@/components/shared/PageContainer'
 import { useGetWorkspaceDetails } from '@/services/useGetWorkspaceDetails'
-import { MoveDown, EllipsisIcon, SettingsIcon, Globe } from 'lucide-react'
+import { ArrowUp, EllipsisIcon, SettingsIcon, Globe, MoveUpRight } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useState } from 'react'
+import { CustomSkeleton } from '@/components/shared/CustomSkeleton'
 
 export default function ProjectList() {
   const [selectedItems, setSelectedItems] = useState<object[]>([])
@@ -65,58 +66,101 @@ export default function ProjectList() {
         }
       />
 
-      <Table>
-        <TableHeader>
-          <TableRow className='font-medium hover:cursor-pointer'>
-            <TableHead>
-              <Checkbox checked={!!isAllSelected} onCheckedChange={toggleSelectAll} aria-label='Select All' />
-            </TableHead>
-            <TableHead className='flex items-center justify-between'>
-              <p>Name</p>
-              <MoveDown className='size-4' />
-            </TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead className='flex items-center justify-between'>
-              Created by
-              <MoveDown className='size-4' />
-            </TableHead>
-            <TableHead className='max-w-32'>Status</TableHead>
-            <TableHead>Region</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {workspaceData?.data?.projects?.map((project, index) => (
-            <TableRow className='h-[50px]' onClick={() => navigate(project.id)}>
-              <TableCell>
-                <Checkbox
-                  onClick={(e) => e.stopPropagation()}
-                  checked={selectedItems.includes(project)}
-                  onCheckedChange={() => toggleRowSelection(project)}
-                  aria-label={`Select Row ${index}`}
-                />
-              </TableCell>
-              <TableCell>
-                <div className='flex items-center gap-2'>
-                  <Globe className='size-4' />
-                  {project.name}
-                </div>
-              </TableCell>
-              <TableCell>{project.description || 'No description available'}</TableCell>
-              <TableCell>{project.type}</TableCell>
-              <TableCell>@{project.users.username}</TableCell>
-              <TableCell className='max-w-32 text-green-400'>Active</TableCell>
-              <TableCell>{project.region}</TableCell>
-              <TableCell className='w-10'>
-                <Button onClick={(e) => e.stopPropagation()} variant={'ghost'} size={'icon'}>
-                  <EllipsisIcon />
-                </Button>
-              </TableCell>
+      {workspaceData?.data?.projects ? (
+        <Table>
+          <TableHeader>
+            <TableRow className='font-medium hover:cursor-pointer'>
+              <TableHead>
+                <Checkbox checked={!!isAllSelected} onCheckedChange={toggleSelectAll} aria-label='Select All' />
+              </TableHead>
+              <TableHead className='flex items-center gap-2'>
+                <p>Name</p>
+                <ArrowUp className='size-4' />
+              </TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className='max-w-32'>Status</TableHead>
+
+              <TableHead className='flex items-center gap-2'>
+                Created by
+                <ArrowUp className='size-4' />
+              </TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Region</TableHead>
+              <TableHead></TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {workspaceData?.data?.projects?.map((project, index) => (
+              <TableRow className='h-[50px]'>
+                <TableCell>
+                  <Checkbox
+                    onClick={(e) => e.stopPropagation()}
+                    checked={selectedItems.includes(project)}
+                    onCheckedChange={() => toggleRowSelection(project)}
+                    aria-label={`Select Row ${index}`}
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className='flex items-center gap-2'>
+                    <Globe className='size-4' />
+                    <p
+                      onClick={() => navigate(project.id)}
+                      className='cursor-pointer px-2 py-1 duration-200 hover:bg-red-500/80 hover:underline'
+                    >
+                      {project.name}
+                    </p>
+                  </div>
+                </TableCell>
+                <TableCell className='max-w-40'>
+                  <p className='line-clamp-1 w-full'>{project.description || 'No description available'}</p>
+                </TableCell>
+                <TableCell className='mt-1.5 flex select-none items-center text-green-600'>
+                  {['A', 'c', 't', 'i', 'v', 'e'].map((letter, index) => (
+                    <p
+                      className='animate-wave'
+                      style={{
+                        animationDelay: `${index * 100}ms`
+                      }}
+                    >
+                      {letter}
+                    </p>
+                  ))}
+                </TableCell>
+                <TableCell>@{project.users.username}</TableCell>
+                <TableCell>{project.type}</TableCell>
+
+                <TableCell>{project.region}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <EllipsisIcon className='size-4' />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className='w-40'>
+                      <DropdownMenuItem>
+                        <MoveUpRight />
+                        Move
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <SettingsIcon />
+                        Settings
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className='mt-8 space-y-2'>
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+          <CustomSkeleton className='h-[30px] rounded-sm' />
+        </div>
+      )}
     </PageContainer>
   )
 }

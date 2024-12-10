@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Calendar, CloudIcon, Copy, Cylinder, Globe, Link, MessageSquareText, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
+import { CustomSkeleton } from '@/components/shared/CustomSkeleton'
 
 export default function ProjectDetails() {
   const { projectId } = useParams()
@@ -16,19 +17,22 @@ export default function ProjectDetails() {
   const { data: deploymentData } = useGetDeploymentsByProjectId(projectId as string)
 
   return (
-    projectData &&
-    deploymentData?.data && (
-      <>
+    <>
+      {projectData?.data && deploymentData?.data ? (
         <OverviewCard
           deploymentData={deploymentData?.data[0]}
           status={projectData?.data?.status as checkStatusResponse}
-          projectData={projectData?.data}
+          projectData={projectData?.data as getProjectsResponse}
         />
+      ) : (
+        <CustomSkeleton className='h-48 w-full rounded-lg' />
+      )}
 
-        {deploymentData?.data && deploymentData?.data?.length > 0 && (
-          <div className='mt-8'>
-            <h1 className='mb-2 text-lg font-semibold'>Deployments</h1>
+      <div className='mt-8'>
+        <h1 className='mb-2 text-lg font-semibold'>Deployments</h1>
 
+        {deploymentData?.data && projectData ? (
+          <>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -64,134 +68,138 @@ export default function ProjectDetails() {
                 <p>View all...</p>
               </Button>
             </div>
+          </>
+        ) : (
+          <div className='mt-8 space-y-2'>
+            <CustomSkeleton className='h-[30px] rounded-sm' />
+            <CustomSkeleton className='h-[30px] rounded-sm' />
+            <CustomSkeleton className='h-[30px] rounded-sm' />
           </div>
         )}
-      </>
-    )
+      </div>
+    </>
   )
 }
 
 interface OverviewCardProps {
-  projectData: getProjectsResponse | undefined
+  projectData: getProjectsResponse
   status: checkStatusResponse
   deploymentData: DeploymentsResponse
 }
 
 function OverviewCard({ projectData, status, deploymentData }: OverviewCardProps) {
   return (
-    projectData && (
-      <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
-        <div className='flex w-full items-start justify-between gap-10 text-sm'>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-4 font-medium text-muted-foreground'>
-              <div className='flex items-center gap-1.5'>
-                <Globe size={16} />
-                <p>Static website</p>
-              </div>
-              <p className='flex items-center gap-1.5'>
-                {status === 'Failed' && (
-                  <>
-                    <span className='h-2.5 w-2.5 rounded-full bg-red-500'></span>
-                    <span>Failed</span>
-                  </>
-                )}
-
-                {status === 'InProgress' && (
-                  <>
-                    <span className='h-2.5 w-2.5 rounded-full bg-yellow-500'></span>
-                    <span>
-                      {['D', 'e', 'p', 'l', 'o', 'y', 'i', 'n', 'g', '.', '.', '.'].map((item, i) => (
-                        <span
-                          className={`animate-wave`}
-                          key={i}
-                          style={{
-                            animationDelay: `${i * 100}ms`
-                          }}
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </span>
-                  </>
-                )}
-
-                {status === 'Deployed' && (
-                  <>
-                    <span className='h-2.5 w-2.5 animate-pulse rounded-full bg-green-500'></span>
-                    <span>Live</span>
-                  </>
-                )}
-              </p>
+    <div className='relative flex gap-6 rounded-lg border p-6 shadow-sm'>
+      <div className='flex w-full items-start justify-between gap-10 text-sm'>
+        <div className='space-y-4'>
+          <div className='flex items-center gap-4 font-medium text-muted-foreground'>
+            <div className='flex items-center gap-1.5'>
+              <Globe size={16} />
+              <p>Static website</p>
             </div>
+            <p className='flex items-center gap-1.5'>
+              {status === 'Failed' && (
+                <>
+                  <span className='h-2.5 w-2.5 rounded-full bg-red-500'></span>
+                  <span>Failed</span>
+                </>
+              )}
 
-            <h1 className='text-4xl font-medium'>{projectData.name}</h1>
+              {status === 'InProgress' && (
+                <>
+                  <span className='h-2.5 w-2.5 rounded-full bg-yellow-500'></span>
+                  <span>
+                    {['D', 'e', 'p', 'l', 'o', 'y', 'i', 'n', 'g', '.', '.', '.'].map((item, i) => (
+                      <span
+                        className={`animate-wave`}
+                        key={i}
+                        style={{
+                          animationDelay: `${i * 100}ms`
+                        }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </span>
+                </>
+              )}
 
-            <p className='text-muted-foreground'>
-              <span className='font-medium'>{projectData.description}</span>
+              {status === 'Deployed' && (
+                <>
+                  <span className='h-2.5 w-2.5 animate-pulse rounded-full bg-green-500'></span>
+                  <span>Live</span>
+                </>
+              )}
             </p>
+          </div>
 
+          <h1 className='text-4xl font-medium'>{projectData.name}</h1>
+
+          <p className='text-muted-foreground'>
+            <span className='font-medium'>{projectData.description}</span>
+          </p>
+
+          <div className='flex items-center gap-1.5 text-muted-foreground'>
+            <Link size={16} className='shrink-0' />
+            <a rel='noreferrer' target='_blank' className='text-blue-500 underline' href={projectData.cloudfront_url}>
+              {projectData.cloudfront_url}
+            </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(projectData.cloudfront_url)
+                toast.success('Copied to clipboard')
+              }}
+            >
+              <Copy size={16} className='shrink-0' />
+            </button>
+          </div>
+
+          {deploymentData && (
             <div className='flex items-center gap-1.5 text-muted-foreground'>
-              <Link size={16} className='shrink-0' />
-              <a rel='noreferrer' target='_blank' className='text-blue-500 underline' href={projectData.cloudfront_url}>
-                {projectData.cloudfront_url}
-              </a>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(projectData.cloudfront_url)
-                  toast.success('Copied to clipboard')
-                }}
-              >
-                <Copy size={16} className='shrink-0' />
-              </button>
+              <MessageSquareText size={16} className='shrink-0' />
+              <p>{deploymentData?.deployment_msg}</p>
             </div>
+          )}
+        </div>
 
-            {deploymentData && (
-              <div className='flex items-center gap-1.5 text-muted-foreground'>
-                <MessageSquareText size={16} className='shrink-0' />
-                <p>{deploymentData?.deployment_msg}</p>
-              </div>
-            )}
-          </div>
+        <div className='space-y-4 whitespace-nowrap'>
+          {deploymentData && (
+            <>
+              <p className='flex items-center gap-1.5 text-muted-foreground'>
+                <UserRound size={16} />
+                Deployed by <span className='font-medium underline'>@{deploymentData?.users?.username}</span>
+              </p>
 
-          <div className='space-y-4 whitespace-nowrap'>
-            {deploymentData && (
-              <>
-                <p className='flex items-center gap-1.5 text-muted-foreground'>
-                  <UserRound size={16} />
-                  Deployed by <span className='font-medium underline'>@{deploymentData?.users?.username}</span>
-                </p>
+              <p className='flex items-center gap-1.5 text-muted-foreground'>
+                <Calendar size={16} />
+                Deployed at
+                <span className='font-medium'>{formatDate(deploymentData?.created_at)}</span>
+              </p>
+            </>
+          )}
 
-                <p className='flex items-center gap-1.5 text-muted-foreground'>
-                  <Calendar size={16} />
-                  Deployed at
-                  <span className='font-medium'>{formatDate(deploymentData?.created_at)}</span>
-                </p>
-              </>
-            )}
-
-            <p className='flex items-center gap-1.5 text-muted-foreground'>
-              <Cylinder size={16} />
-              Bucket:{' '}
-              <span className='font-medium underline'>
-                <a href={`https://s3.console.aws.amazon.com/s3/buckets/${projectData.bucket_name}`}>
-                  {projectData.bucket_name}
-                </a>
-              </span>
-            </p>
-            <p className='flex items-center gap-1.5 text-muted-foreground'>
-              <CloudIcon size={16} />
-              Cloudfront:{' '}
-              <span className='font-medium underline'>
-                <a
-                  href={`https://console.aws.amazon.com/cloudfront/home?region=us-east-1#/distributions/${projectData.distribution_id}`}
-                >
-                  {projectData.distribution_id}
-                </a>
-              </span>
-            </p>
-          </div>
+          <p className='flex items-center gap-1.5 text-muted-foreground'>
+            <Cylinder size={16} />
+            Bucket:{' '}
+            <span className='font-medium underline'>
+              <a href={`https://s3.console.aws.amazon.com/s3/buckets/${projectData.bucket_name}`}>
+                {projectData.bucket_name}
+              </a>
+            </span>
+          </p>
+          <p className='flex items-center gap-1.5 text-muted-foreground'>
+            <CloudIcon size={16} />
+            Cloudfront:{' '}
+            <span className='font-medium underline'>
+              <a
+                href={`https://console.aws.amazon.com/cloudfront/home?region=us-east-1#/distributions/${projectData.distribution_id}`}
+              >
+                {projectData.distribution_id}
+              </a>
+            </span>
+          </p>
         </div>
       </div>
-    )
+    </div>
   )
 }

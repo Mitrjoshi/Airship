@@ -38,7 +38,7 @@ function WorkspaceCard({ name, description, created_at, link }: WorkspaceCardPro
   return (
     <Link
       to={link}
-      className='group flex h-36 flex-col justify-between rounded-lg border p-4 duration-200 hover:border-gray-600 hover:bg-gray-900/50'
+      className='group flex h-36 flex-col justify-between rounded-lg border p-4 duration-200 hover:border-gray-600 hover:bg-secondary'
     >
       <div>
         <div className='mb-2 flex items-center justify-between'>
